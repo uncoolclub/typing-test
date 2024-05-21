@@ -1,18 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
-
-
-class WordTestWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle('낱말 연습')
-        self.move(0, 0)
-        self.setFixedSize(1024, 768)
-        self.show()
-
+from wordTest import WordTestWindow
+import constants as c
 
 class MyApp(QWidget):
 
@@ -44,7 +33,7 @@ class MyApp(QWidget):
 
         self.setWindowTitle('타자 연습')
         self.move(0, 0)
-        self.setFixedSize(1024, 768)
+        self.setFixedSize(c.MAIN_WIDTH, c.MAIN_HEIGHT)
         self.show()
 
 
