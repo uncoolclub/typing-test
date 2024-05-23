@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFontDatabase, QFont, QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QApplication, QTextEdit
 from config import FONT_LOCATION, IMG_LOCATION, SVG_LOCATION
+from ui.longTestWindow import LongTestWindow
 
 
 class MainWindow(QMainWindow):
@@ -119,6 +120,7 @@ class MainWindow(QMainWindow):
             icon_label.setAlignment(Qt.AlignCenter)
 
             button = QPushButton(text, container)
+            button.clicked.connect(self.showWindow)
             button.setObjectName("customButton")
             button.setFixedHeight(50)
             button.setStyleSheet("border: none; text-align: left; padding-left: 60px;")
@@ -146,6 +148,10 @@ class MainWindow(QMainWindow):
         palette.setBrush(QPalette.Window, QBrush(self.scaled_pixmap))
         self.setPalette(palette)
         super(MainWindow, self).resizeEvent(event)
+
+    def showWindow(self):
+        self.hide()
+        self.longTestWin =LongTestWindow()
 
 
 if __name__ == '__main__':
