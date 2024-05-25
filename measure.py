@@ -7,6 +7,7 @@ class TypingSpeedTest(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.max_cpm = 0
 
     def initUI(self):
         self.test_sentence = "빠른 갈색 여우가 게으른 개를 뛰어넘습니다."
@@ -17,6 +18,7 @@ class TypingSpeedTest(QWidget):
         self.sentence_label = QLabel(self.test_sentence)
         self.input_field = QLineEdit()
         self.speed_label = QLabel("타이핑 속도: 0 타/분 (CPM)")
+        self.max_speed_label = QLabel("최대 타이핑 속도 : 0 타/분 (CPM)")
         self.reset_button = QPushButton("다시 시작")
         self.reset_button.clicked.connect(self.resetTest)
 
@@ -27,6 +29,7 @@ class TypingSpeedTest(QWidget):
         layout.addWidget(self.sentence_label)
         layout.addWidget(self.input_field)
         layout.addWidget(self.speed_label)
+        layout.addWidget(self.max_speed_label)
         layout.addWidget(self.reset_button)
         self.setLayout(layout)
 
@@ -40,7 +43,7 @@ class TypingSpeedTest(QWidget):
     def onTextChanged(self):
         if self.start_time is None:
             self.start_time = time.time()
-        
+
         if self.input_field.text() == "":
             self.resetTest()
             
@@ -51,15 +54,23 @@ class TypingSpeedTest(QWidget):
     def updateSpeed(self):
         if self.start_time is not None and not self.is_finished:
             elapsed_time = time.time() - self.start_time
-            num_chars = len(self.input_field.text())
-            cpm = (num_chars / elapsed_time) * 60
-            self.speed_label.setText(f"타이핑 속도: {cpm:.0f} 타/분 (CPM)")
+            if elapsed_time > 1:  # 최소 1초 이상 지나야 타이핑 속도를 계산
+                num_chars = len(self.input_field.text())
+                cpm = (num_chars / elapsed_time) * 60
+                self.speed_label.setText(f"타이핑 속도: {cpm:.0f} 타/분 (CPM)")
+
+                if cpm < 1000:  # 비정상적으로 높은 속도를 필터링
+                    if self.max_cpm < cpm:
+                        self.max_cpm = cpm
+
+                self.max_speed_label.setText(f"최대 타이핑 속도 : {self.max_cpm:.0f} 타/분 (CPM)")
 
     def resetTest(self):
         self.start_time = None
         self.is_finished = False
         self.input_field.clear()
         self.speed_label.setText("타이핑 속도: 0 타/분 (CPM)")
+        self.max_speed_label.setText(f"최대 타이핑 속도 : {self.max_cpm:.0f} 타/분 (CPM)")
         self.timer.start(100)
 
 if __name__ == '__main__':
