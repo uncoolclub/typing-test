@@ -1,80 +1,54 @@
 import sys
 import time
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton
-from PyQt5.QtCore import QTimer
 
-class TypingSpeedTest(QWidget):
+class TypingSpeedTest():
     def __init__(self):
-        super().__init__()
-        self.initUI()
+        # 시작시간
+        self.start_time = None
+        # 종료 여부
+        self.is_finished = False
+        # 비교해야할 원본 문자열
+        self.sentence = ""
+        # 입력 받은 텍스트
+        self.input_field_text = ""
+
         self.max_cpm = 0
 
-    def initUI(self):
-        self.test_sentence = "빠른 갈색 여우가 게으른 개를 뛰어넘습니다."
-        self.start_time = None
+    def startTest(self, sentence):
+        self.start_time = time.time()
+        self.sentence = sentence
         self.is_finished = False
 
-        self.label = QLabel("다음 문장을 빠르고 정확하게 입력하세요:")
-        self.sentence_label = QLabel(self.test_sentence)
-        self.input_field = QLineEdit()
-        self.speed_label = QLabel("타이핑 속도: 0 타/분 (CPM)")
-        self.max_speed_label = QLabel("최대 타이핑 속도 : 0 타/분 (CPM)")
-        self.reset_button = QPushButton("다시 시작")
-        self.reset_button.clicked.connect(self.resetTest)
-
-        self.input_field.textChanged.connect(self.onTextChanged)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.label)
-        layout.addWidget(self.sentence_label)
-        layout.addWidget(self.input_field)
-        layout.addWidget(self.speed_label)
-        layout.addWidget(self.max_speed_label)
-        layout.addWidget(self.reset_button)
-        self.setLayout(layout)
-
-        self.setWindowTitle("한글 타자 속도 측정기")
-        self.setGeometry(300, 300, 400, 200)
-
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.updateSpeed)
-        self.timer.start(100)
-
-    def onTextChanged(self):
+    def onTextChanged(self, input_text):
+        self.input_field_text = input_text
         if self.start_time is None:
             self.start_time = time.time()
 
-        if self.input_field.text() == "":
+        if self.input_field_text == "":
             self.resetTest()
-            
-        if self.input_field.text() == self.test_sentence and not self.is_finished:
+
+        if self.input_field_text == self.sentence and not self.is_finished:
             self.is_finished = True
-            self.timer.stop()
+            self.start_time = None
 
     def updateSpeed(self):
         if self.start_time is not None and not self.is_finished:
             elapsed_time = time.time() - self.start_time
-            if elapsed_time > 1:  # 최소 1초 이상 지나야 타이핑 속도를 계산
-                num_chars = len(self.input_field.text())
+            if elapsed_time > 1:
+                num_chars = len(self.input_field_text)
                 cpm = (num_chars / elapsed_time) * 60
-                self.speed_label.setText(f"타이핑 속도: {cpm:.0f} 타/분 (CPM)")
 
-                if cpm < 1000:  # 비정상적으로 높은 속도를 필터링
+                if cpm < 1000:
                     if self.max_cpm < cpm:
                         self.max_cpm = cpm
 
-                self.max_speed_label.setText(f"최대 타이핑 속도 : {self.max_cpm:.0f} 타/분 (CPM)")
+                return cpm, self.max_cpm
+        return 0, self.max_cpm
 
     def resetTest(self):
         self.start_time = None
         self.is_finished = False
-        self.input_field.clear()
-        self.speed_label.setText("타이핑 속도: 0 타/분 (CPM)")
-        self.max_speed_label.setText(f"최대 타이핑 속도 : {self.max_cpm:.0f} 타/분 (CPM)")
-        self.timer.start(100)
+
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = TypingSpeedTest()
-    ex.show()
-    sys.exit(app.exec_())
+    TypingSpeedTest()

@@ -1,7 +1,7 @@
 import sys
-import random
+import measure
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QWidget, QFrame
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 
 class LongTextPractice(QMainWindow):
     def __init__(self):
@@ -9,6 +9,7 @@ class LongTextPractice(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        self.SpeedTest = measure.TypingSpeedTest()
         self.setWindowTitle('한컴타자연습 - 긴글연습')
         self.setFixedSize(1024, 768)  # 창 크기 고정
 
@@ -68,22 +69,66 @@ class LongTextPractice(QMainWindow):
             layout.addWidget(textLabel)
             layout.addSpacing(5)
 
-            inputText = QLineEdit(self)
-            inputText.setStyleSheet("font-size: 14px;")
-            inputText.setFixedHeight(25)
-            self.input_fields.append(inputText)
-            layout.addWidget(inputText)
+            input_field = TypingLineEdit(line, self.SpeedTest, self)
+            input_field.setStyleSheet("font-size: 14px;")
+            input_field.setFixedHeight(25)
+            self.input_fields.append(input_field)
+            layout.addWidget(input_field)
+            input_field.textChanged.connect(lambda text, t=line: self.onTextChanged(text, t))
 
         text_layout.addLayout(layout)
         text_frame.setLayout(text_layout)
         main_layout.addWidget(text_frame)
 
-        # Add stretch to fill remaining space
         main_layout.addStretch(1)
 
         container = QWidget()
         container.setLayout(main_layout)
         self.setCentralWidget(container)
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.updateSpeed)
+        self.timer.start(100)
+
+
+    
+    def onTextChanged(self, text, target_text):
+        active_field = QApplication.focusWidget()
+        if isinstance(active_field, QLineEdit):
+            self.SpeedTest.onTextChanged(active_field.text())
+            accuracy = self.calculateAccuracy(active_field.text(), target_text)
+            self.accuracy_label.setText(f"정확도: {accuracy:.2f}%")
+
+    def updateSpeed(self):
+        cpm, max_cpm = self.SpeedTest.updateSpeed()
+        self.speed_label.setText(f"타자 속도: {cpm:.0f} 타/분")
+        self.max_speed_label.setText(f"최고 타자 속도: {max_cpm:.0f} 타/분")
+
+
+    def calculateAccuracy(self, input_text, target_text):
+        matches = sum(1 for a, b in zip(input_text, target_text) if a == b)
+        accuracy = (matches / len(target_text)) * 100 if target_text else 0
+        return accuracy
+    
+class TypingLineEdit(QLineEdit):
+    def __init__(self, target_text, speed_test, parent=None):
+        super().__init__(parent)
+        self.target_text = target_text
+        self.speed_test = speed_test
+        self.parent = parent
+
+    def focusInEvent(self, event):
+        self.speed_test.startTest(self.target_text)
+        super().focusInEvent(event)
+
+    def focusOutEvent(self, event):
+        self.speed_test.resetTest()
+        super().focusOutEvent(event)
+
+    def keyPressEvent(self, event):
+        if event.key() in [Qt.Key_Backspace, Qt.Key_Delete] and self.text() == "":
+            self.speed_test.resetTest()
+        super().keyPressEvent(event)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
