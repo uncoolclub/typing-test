@@ -1,11 +1,42 @@
 import sys
 import measure
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QWidget, QFrame
+
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QFrame, QMainWindow
 from PyQt5.QtCore import Qt, QTimer
+
+CHO = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ',
+       'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ']
+JUNG = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ',
+        'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ']
+JONG = [' ', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ',
+        'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ',
+        'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ']
+
+def break_hangul(string):
+    break_words = []
+
+    for k in string:
+        if ord("가") <= ord(k) <= ord("힣"):
+            index = ord(k) - ord("가")
+            c_cho = int((index / 28) / 21)
+            c_jung = int((index / 28) % 21)
+            c_jong = int(index % 28)
+
+            break_words.append(CHO[c_cho])
+            break_words.append(JUNG[c_jung])
+
+            if c_jong > 0:
+                break_words.append(JONG[c_jong])
+        else:
+            break_words.append(k)
+    return break_words
+
 
 class LongTextPractice(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.current_typing_text_list = []
+        self.current_sentence_index = 0
         self.initUI()
 
     def initUI(self):
@@ -31,7 +62,6 @@ class LongTextPractice(QMainWindow):
             "무궁화 삼천리 화려 강산",
             "대한 사람, 대한으로 길이 보전하세"
         ]
-
 
         self.current_text = self.texts[:9]
         main_layout = QVBoxLayout()
@@ -90,26 +120,72 @@ class LongTextPractice(QMainWindow):
         self.timer.timeout.connect(self.updateSpeed)
         self.timer.start(100)
 
+    def onTextChanged(self, text, base_text):
+        print("current_text", text, base_text)
 
-    
-    def onTextChanged(self, text, target_text):
         active_field = QApplication.focusWidget()
         if isinstance(active_field, QLineEdit):
             self.SpeedTest.onTextChanged(active_field.text())
-            accuracy = self.calculateAccuracy(active_field.text(), target_text)
-            self.accuracy_label.setText(f"정확도: {accuracy:.2f}%")
+        self.check_accuracy_and_move_to_next_line(text, base_text)
 
     def updateSpeed(self):
         cpm, max_cpm = self.SpeedTest.updateSpeed()
         self.speed_label.setText(f"타자 속도: {cpm:.0f} 타/분")
         self.max_speed_label.setText(f"최고 타자 속도: {max_cpm:.0f} 타/분")
 
+    def disable_all_input_fields_except_current(self):
+        for index, input_field in enumerate(self.input_fields):
+            if index != self.current_sentence_index:
+                input_field.setDisabled(True)
+            else:
+                input_field.setEnabled(True)
 
-    def calculateAccuracy(self, input_text, target_text):
-        matches = sum(1 for a, b in zip(input_text, target_text) if a == b)
-        accuracy = (matches / len(target_text)) * 100 if target_text else 0
-        return accuracy
-    
+    def can_move_to_next_line(self, text):
+        typing_text_length = len(text.rstrip())
+        current_sentence_length = len(self.texts[self.current_sentence_index])
+
+        return typing_text_length >= current_sentence_length
+
+    def move_to_next_line(self, text):
+        if self.can_move_to_next_line(text):
+            self.current_sentence_index += 1
+
+            if self.current_sentence_index < len(self.input_fields):
+                next_input_field = self.input_fields[self.current_sentence_index]
+                next_input_field.setFocus()
+
+    def check_accuracy_and_move_to_next_line(self, text, base_text):
+        self.calculate_overall_accuracy()
+        self.move_to_next_line(text)
+        self.disable_all_input_fields_except_current()
+
+    def calculate_overall_accuracy(self):
+        total_mismatched_characters = 0
+        total_characters = 0
+
+        # 모든 입력 필드와 해당 기준 텍스트를 비교
+        for input_field, base_text in zip(self.input_fields, self.texts):
+            typed_text = input_field.text()
+            separated_typed_text = break_hangul(typed_text)
+            separated_correct_text = break_hangul(base_text)
+
+            # 비교하여 불일치하는 글자 수를 계산
+            mismatched_characters = sum(
+                1 for typed_char, correct_char in zip(separated_typed_text, separated_correct_text) if
+                typed_char != correct_char)
+
+            total_mismatched_characters += mismatched_characters
+            total_characters += len(separated_correct_text)
+
+        # 전체 문자의 수를 기준으로 정확도 계산
+        if total_characters > 0:
+            overall_accuracy = ((total_characters - total_mismatched_characters) / total_characters) * 100
+        else:
+            # 입력 필드가 비어있다면 정확도는 100%로 가정
+            overall_accuracy = 100
+
+        self.accuracy_label.setText(f"정확도: {overall_accuracy:.2f}%")
+
 class TypingLineEdit(QLineEdit):
     def __init__(self, target_text, speed_test, parent=None):
         super().__init__(parent)
@@ -129,6 +205,7 @@ class TypingLineEdit(QLineEdit):
         if event.key() in [Qt.Key_Backspace, Qt.Key_Delete] and self.text() == "":
             self.speed_test.resetTest()
         super().keyPressEvent(event)
+            
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
