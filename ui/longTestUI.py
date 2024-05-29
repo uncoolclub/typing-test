@@ -3,6 +3,7 @@ import measure
 
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QFrame, QMainWindow
 from PyQt5.QtCore import Qt, QTimer
+from logic.textFile import TextFile
 
 CHO = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ',
        'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ']
@@ -33,8 +34,9 @@ def break_hangul(string):
 
 
 class LongTextPractice(QMainWindow):
-    def __init__(self):
+    def __init__(self, file_path = '/resources/files/default1.txt'):
         super().__init__()
+        self.textFile = TextFile(file_path)
         self.current_typing_text_list = []
         self.current_sentence_index = 0
         self.initUI()
@@ -44,24 +46,7 @@ class LongTextPractice(QMainWindow):
         self.setWindowTitle('한컴타자연습 - 긴글연습')
         self.setFixedSize(1024, 768)  # 창 크기 고정
 
-        self.texts = [
-            "동해물과 백두산이 마르고 닳도록",
-            "하느님이 보우하사 우리나라 만세",
-            "무궁화 삼천리 화려 강산",
-            "대한 사람, 대한으로 길이 보전하세",
-            "남산 위에 저 소나무 철갑을 두른 듯",
-            "바람 서리 불변함은 우리 기상일세",
-            "무궁화 삼천리 화려 강산",
-            "대한 사람, 대한으로 길이 보전하세",
-            "가을 하늘 공활한데 높고 구름 없이",
-            "밝은 달은 우리 가슴 일편단심일세",
-            "무궁화 삼천리 화려 강산",
-            "대한 사람, 대한으로 길이 보전하세",
-            "이 기상과 이 맘으로 충성을 다하여",
-            "괴로우나 즐거우나 나라 사랑하세",
-            "무궁화 삼천리 화려 강산",
-            "대한 사람, 대한으로 길이 보전하세"
-        ]
+        self.texts = self.textFile.getText()
 
         self.current_text = self.texts[:9]
         main_layout = QVBoxLayout()
@@ -119,6 +104,7 @@ class LongTextPractice(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateSpeed)
         self.timer.start(100)
+        self.show()
 
     def onTextChanged(self, text, base_text):
         print("current_text", text, base_text)
@@ -205,10 +191,3 @@ class TypingLineEdit(QLineEdit):
         if event.key() in [Qt.Key_Backspace, Qt.Key_Delete] and self.text() == "":
             self.speed_test.resetTest()
         super().keyPressEvent(event)
-            
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = LongTextPractice()
-    ex.show()
-    sys.exit(app.exec_())

@@ -8,8 +8,8 @@ class ManagerJSON:
         self.file_path = file_path
         if not os.path.exists(file_path):
             self.createJSON(file_path)
-        else:
-            self.readJSON(file_path)
+        # else:
+        #     self.readJSON(file_path)
 
     def readJSON(self, file_path, _encoding = "UTF-8"):
         self.file_path = file_path
