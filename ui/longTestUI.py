@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QFrame, QMainWindow
 from PyQt5.QtCore import Qt, QTimer
 from logic.measure.measure_manager import MeasureManager
+from logic.textFile import TextFile
 from ui.widgets.typing_line_edit import TypingLineEdit
 
 
@@ -18,7 +19,7 @@ class LongTextPractice(QMainWindow):
         self.setWindowTitle('한컴타자연습 - 긴글연습')
         self.setFixedSize(1024, 768)
 
-        self.texts = self.textFile.getText()
+        self.texts = self.textFile.getText()[:9]
 
         main_layout = QVBoxLayout()
         stats_frame = QFrame(self)
@@ -111,10 +112,3 @@ class LongTextPractice(QMainWindow):
 
         self.move_to_next_line(text)
         self.disable_all_input_fields_except_current()
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = LongTextPractice()
-    ex.show()
-    sys.exit(app.exec_())
