@@ -22,7 +22,7 @@ class MeasureManager:
             self.start_time = time.time()
 
         if self.input_field_text == "":
-            self.reset_test()
+            self.resetTest()
 
         if self.input_field_text == self.sentence and not self.is_finished:
             self.is_finished = True
