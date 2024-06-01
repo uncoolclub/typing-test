@@ -1,4 +1,4 @@
-import ManagerJSON as MJ
+from lib.ManagerJSON import ManagerJSON
 import os
 
 class User:
@@ -10,8 +10,8 @@ class User:
     # avg_keystrokes = 80  # 평균 타수
 
     def __init__(self, username):
-        file_path = f"./User/{username}/.json"
-        self.userMJ = MJ.ManagerJSON(file_path)
+        file_path = f"./User/personal/{username}.json"
+        self.userMJ = ManagerJSON(file_path)
         self.data = self.userMJ.data
         
     def appendRecord(self, info):
