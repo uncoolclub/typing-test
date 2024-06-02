@@ -7,8 +7,8 @@ from config import FONT_LOCATION, IMG_LOCATION, SVG_LOCATION
 
 
 class Index(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         self.setWindowTitle("타자 연습")
         self.setFixedSize(1024, 768)
@@ -154,7 +154,6 @@ class Index(QWidget):
         super(Index, self).resizeEvent(event)
 
     def showWindow(self, file_path):
-        print('sss')
         from ui.longTestUI import LongTextPractice
         self.longTestWin = LongTextPractice(file_path)
 

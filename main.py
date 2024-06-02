@@ -10,11 +10,11 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         nickname, ok = NicknameDialog.getNickname(self)
-        self.close()
         if ok and nickname:
             self.user = User(nickname)
             print(f'Nickname entered: {nickname}')
-            self.index = Index()
+            self.setFixedSize(1024, 768)
+            self.index = Index(self)
         else:
             print('No nickname entered')
 
