@@ -35,5 +35,8 @@ class ManagerJSON:
     def setData(self, key, value):
         self.data[key] = value
 
-    def getData(self, key):
-        return self.data[key]
+    def getData(self, key = None):
+        if(key != None):
+            return self.data[key]
+        else:
+            return self.data

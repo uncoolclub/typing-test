@@ -10,16 +10,18 @@ class User:
     # avg_keystrokes = 80  # 평균 타수
 
     def __init__(self, username):
-        file_path = f"./User/personal/{username}.json"
-        self.userMJ = ManagerJSON(file_path)
+        self.file_path = f"./User/personal/{username}.json"
+        self.userMJ = ManagerJSON(self.file_path)
         self.data = self.userMJ.data
         
-    def appendRecord(self, info):
-        self.data.append(info)
-        self.userMJ.saveJSON(self.data)
+    def saveRecord(self, title, info):
+        self.userMJ.appendJSON(title, info)
+
+    def getRecord(self):
+        return self.userMJ.getData()
 
     def getTextInfo(self, text_name):
-        self.userJSON.data
+        return self.data
 
     def filterText(self, text_name):
         filterData = []
