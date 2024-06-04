@@ -1,15 +1,14 @@
-import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QFrame, QMainWindow
 from PyQt5.QtCore import Qt, QTimer
 from logic.measure.measure_manager import MeasureManager
-from logic.textFile import TextFile
+from logic.file.textFile import TextFile
 from ui.widgets.typing_line_edit import TypingLineEdit
 
 
 class LongTextPractice(QMainWindow):
-    def __init__(self, file_path = '/resources/files/default1.txt'):
+    def __init__(self, file_name='default1.txt'):
         super().__init__()
-        self.textFile = TextFile(file_path)
+        self.textFile = TextFile(file_name)
         self.MeasureManager = MeasureManager()
         self.current_typing_text_list = []
         self.current_sentence_index = 0
