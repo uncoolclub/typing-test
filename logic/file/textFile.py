@@ -15,7 +15,11 @@ class TextFile():
 
         self.text_list = []
         with open(self.file_path, 'r', encoding=_encoding) as f:
-            self.text_list = [line.strip() for line in f.readlines()]
+            for line in f:
+                line = line.strip()  # 좌우 공백 제거
+                line = line.replace('\n', '')  # 개행 문자 제거
+                if line:  # 빈 줄이 아닌 경우에만 리스트에 추가
+                    self.text_list.append(line)
 
     def getText(self):
         return self.text_list
