@@ -154,9 +154,9 @@ class Index(QWidget):
         self.setPalette(palette)
         super(Index, self).resizeEvent(event)
 
-    def showWindow(self, file_path):
+    def showWindow(self, file_name):
         from ui.longTestUI import LongTextPractice
-        self.longTestWin = LongTextPractice(file_path)
+        self.longTestWin = LongTextPractice(file_name)
 
     def showDialogBox(self):
         from ui.dialogBox import DialogBox

@@ -1,4 +1,3 @@
-# measure_manager.py
 import time
 from utils.broken_hangul import break_hangul
 
@@ -50,15 +49,16 @@ class MeasureManager:
 
     @staticmethod
     def calculate_overall_accuracy(input_fields, texts):
+        print(texts)
         total_mismatched_characters = 0
         total_characters = 0
 
         for input_field, base_text in zip(input_fields, texts):
-            typed_text = input_field.text()
+            typed_text = input_field.get()
+            print(typed_text)
             separated_typed_text = break_hangul(typed_text)
             separated_correct_text = break_hangul(base_text)
 
-            # 비교하여 불일치하는 글자 수를 계산
             mismatched_characters = sum(
                 1 for typed_char, correct_char in zip(separated_typed_text, separated_correct_text) if
                 typed_char != correct_char)
@@ -66,11 +66,9 @@ class MeasureManager:
             total_mismatched_characters += mismatched_characters
             total_characters += len(separated_correct_text)
 
-        # 전체 문자의 수를 기준으로 정확도 계산
         if total_characters > 0:
             overall_accuracy = ((total_characters - total_mismatched_characters) / total_characters) * 100
         else:
-            # 입력 필드가 비어있다면 정확도는 100%로 가정
             overall_accuracy = 100
 
         return overall_accuracy
