@@ -1,6 +1,7 @@
 import os
 import time
 
+
 import customtkinter as ctk
 from tkinter import Toplevel, Frame, RAISED, SUNKEN, LabelFrame, Label, Entry, StringVar
 from PIL import Image, ImageTk
@@ -127,6 +128,8 @@ class ShortTextWindow:
         text = self.input_text_var.get()
         self.measure_manager.onTextChanged(text)
         self.update_speed_and_accuracy()
+        text = self.input_entry.get()
+        self.check_accuracy_and_move_to_next_line(text)
 
     def update_speed_and_accuracy(self):
         cpm, max_cpm = self.measure_manager.updateSpeed()
@@ -141,7 +144,7 @@ class ShortTextWindow:
 
     def can_move_to_next_line(self, text):
         print(text, self.current_sentence_index, self.texts)
-        if self.current_sentence_index < len(self.texts):
+        if self.current_sentence_index < len(self.texts) + 1:
             typing_text_length = len(text.rstrip())
             current_sentence_length = len(self.texts[self.current_sentence_index])
 
@@ -161,7 +164,6 @@ class ShortTextWindow:
             self.short_text_label.configure(text="연습 완료!")
 
     def check_accuracy_and_move_to_next_line(self, text):
-        print(text)
         if self.can_move_to_next_line(text):
             self.move_to_next_line()
 
