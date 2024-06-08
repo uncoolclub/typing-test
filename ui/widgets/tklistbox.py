@@ -4,10 +4,12 @@ from ui.global_font import GlobalFont
 
 
 class TKListbox:
-    def __init__(self, master, items, **kwargs):
+    def __init__(self, master, items, on_item_selected, **kwargs):
         self.master = master
         self.items = items
+        self.on_item_selected = on_item_selected
         self.kwargs = kwargs
+        self.listbox = None
 
     def create_listbox(self):
         listbox_frame = Frame(self.master, relief=SUNKEN, bd=2, bg="#AAAAAA")
@@ -37,6 +39,4 @@ class TKListbox:
 
         if selected_index:
             selected_item = self.items[selected_index[0]]
-            selected_item['on_item_selected'](selected_item['label'])
-
-
+            self.on_item_selected(selected_item)
