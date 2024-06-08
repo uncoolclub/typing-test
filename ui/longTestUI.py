@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QFrame, QMainWindow
 from PyQt5.QtCore import Qt, QTimer
 from logic.measure.measure_manager import MeasureManager
-from logic.file.textFile import TextFile
+from utils.text_file import TextFile
 from ui.widgets.typing_line_edit import TypingLineEdit
 
 
@@ -18,7 +18,7 @@ class LongTextPractice(QMainWindow):
         self.setWindowTitle('한컴타자연습 - 긴글연습')
         self.setFixedSize(1024, 768)
 
-        self.texts = self.textFile.getText()[:9]
+        self.texts = self.textFile.get_text()[:9]
 
         main_layout = QVBoxLayout()
         stats_frame = QFrame(self)
