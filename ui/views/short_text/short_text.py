@@ -1,14 +1,14 @@
 import os.path
 import customtkinter as ctk
-from tkinter import Frame, RAISED, SUNKEN, LabelFrame, Label, Entry, StringVar
+from tkinter import Frame, RAISED, SUNKEN, LabelFrame, Label
 from PIL import Image, ImageTk
 
 from config import IMG_LOCATION
-from logic.file.textFile import TextFile
+from ui.widgets.tkinputframe import TKInputFrame
+from utils.text_file import TextFile
 from ui.global_font import GlobalFont
 from ui.widgets.progressbar import Progressbar
 from logic.measure.measure_manager import MeasureManager
-from ui.widgets.timer import Timer
 from ui.widgets.tklabel import TKLabel
 
 
@@ -24,11 +24,7 @@ class ShortTextWindow:
         self.measure_manager = MeasureManager()
         self.current_sentence_index = 0
         self.text_file = TextFile('default1.txt')
-        self.texts = self.text_file.getText()
-
-        # 사용자 입력 관리를 위한 StringVar 초기화
-        self.input_text_var = StringVar()
-        self.input_text_var.trace_add("write", self.on_text_changed)
+        self.texts = self.text_file.get_text()
 
         # 사용자 인터페이스 생성
         self.create_window()
@@ -114,33 +110,20 @@ class ShortTextWindow:
             result_label.grid(row=row, column=1, sticky="e", padx=20, pady=5)
 
         # 입력 및 타이머 설정
-        bottom_frame = Frame(self.master, relief=RAISED, bd=2, bg="#AAAAAA")
-        bottom_frame.pack(side="bottom", fill="x", padx=10, pady=5)
-
-        input_label = TKLabel(master=bottom_frame, text="한글-2").create_label(
-            anchor="w", fg_color="#AAAAAA")
-        input_label.pack(side="left", padx=5, pady=5)
-
-        self.input_entry = Entry(bottom_frame, textvariable=self.input_text_var, font=global_font, relief="flat", bd=0,
-                                 bg="white",
-                                 insertbackground="black", selectbackground="black", selectforeground="white")
-        self.input_entry.pack(side="left", fill="x", expand=True, padx=5)
-        self.input_entry.bind("<Return>", self.on_enter)
-
-        self.timer_label = Timer(master=bottom_frame, text="00:00", font=global_font, bg="#AAAAAA", anchor="e")
-        self.timer_label.pack(side="right", padx=5, pady=5)
-        self.timer_label.start()
+        self.input_frame = TKInputFrame(self.master, self.on_enter, self.on_text_changed, label_text="한글-2",
+                                               font=global_font)
+        self.input_frame.frame.pack(side="bottom", pady=(0, 10))
 
         self.measure_manager.startTest(self.texts[self.current_sentence_index])
 
     # 엔터 키 입력 이벤트 처리
-    def on_enter(self, event):
-        text = self.input_entry.get()
-        self.check_accuracy_and_move_to_next_line(text)
+    def on_enter(self, text):
+        should_delete = self.check_accuracy_and_move_to_next_line(text)
+
+        return should_delete
 
     # 텍스트 변경 이벤트 처리
-    def on_text_changed(self, *args):
-        text = self.input_text_var.get()
+    def on_text_changed(self, text):
         self.measure_manager.onTextChanged(text)
         self.update_speed_and_accuracy()
 
@@ -150,9 +133,9 @@ class ShortTextWindow:
         self.current_speed_label.update_value(cpm, unit="타/분")
         self.max_speed_label.update_value(max_cpm, unit="타/분")
         self.results["current_speed"].configure(text=f"{cpm:.0f}타/분")
-        self.results["typed_chars"].configure(text=f"{len(self.input_entry.get())}타")
+        self.results["typed_chars"].configure(text=f"{len(self.input_frame.input_entry.get())}타")
 
-        accuracy = self.measure_manager.calculate_overall_accuracy([self.input_entry],
+        accuracy = self.measure_manager.calculate_overall_accuracy([self.input_frame.input_entry],
                                                                    [self.texts[self.current_sentence_index]])
         self.accuracy_label.update_value(accuracy, unit="%")
         self.results["accuracy"].configure(text=f"{accuracy:.2f}%")
@@ -173,18 +156,20 @@ class ShortTextWindow:
         self.current_sentence_index += 1
         if self.current_sentence_index < len(self.texts):
             self.short_text_label.configure(text=self.texts[self.current_sentence_index])
-            self.input_entry.delete(0, 'end')
+            self.input_frame.input_entry.delete(0, 'end')
             self.measure_manager.startTest(self.texts[self.current_sentence_index])
             self.update_speed_and_accuracy()
         else:
-            self.input_entry.configure(state='disabled')
+            self.input_frame.input_entry.configure(state='disabled')
             self.short_text_label.configure(text="연습 완료!")
 
     # 정확도 체크 및 다음 줄로 이동 처리
     def check_accuracy_and_move_to_next_line(self, text):
-        print(text)
         if self.can_move_to_next_line(text):
             self.move_to_next_line()
+            return True
+
+        return False
 
 
 if __name__ == "__main__":
@@ -192,7 +177,6 @@ if __name__ == "__main__":
     tk_font = (font_family, font_size)
 
     root = ctk.CTk()
-    root.title("메인 윈도우")
     root.geometry("1024x768")
     root.configure(fg_color="#AAAAAA")
     short_practice = ShortTextWindow(master=root)
