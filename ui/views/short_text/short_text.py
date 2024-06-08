@@ -194,5 +194,6 @@ if __name__ == "__main__":
     root = ctk.CTk()
     root.title("메인 윈도우")
     root.geometry("1024x768")
+    root.configure(fg_color="#AAAAAA")
     short_practice = ShortTextWindow(master=root)
     root.mainloop()
