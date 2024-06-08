@@ -56,13 +56,19 @@ class MainMenu:
         menu_container = ctk.CTkFrame(self.master, width=640, height=30, fg_color="#AAAAAA", border_width=1,
                                       border_color="black", corner_radius=0)
         menu_container.pack(side="top", fill="x", pady=5)
+
+        # Define actions for each menu item
         actions = {
-            "짧은글 연습": lambda: self.open_new_window("짧은글 연습"),
+            "낱말 연습": lambda: self.open_new_window("낱말 연습"),
+            "짧은글 연습": self.show_short_text_window,
+            "긴글 연습": lambda: self.open_new_window("긴글 연습"),
+            "파일 불러오기": lambda: self.open_new_window("파일 불러오기"),
+            "통계": lambda: self.open_new_window("통계"),
+            "도움말": lambda: self.open_new_window("도움말")
         }
 
         for label in MAIN_MENU:
-            action = actions.get(label, lambda l=label: self.open_new_window(l))
-
+            action = actions.get(label, lambda: self.open_new_window(label))  # Default action if not defined
             button_frame = TKButton(
                 master=menu_container,
                 text=label,
@@ -74,10 +80,16 @@ class MainMenu:
             menu_container.grid_columnconfigure(i, weight=1, minsize=70)
 
     def open_new_window(self, label):
-        self.master.withdraw()
+        self.root.withdraw()
         new_window = Toplevel(self.root)
         new_window.title(label)
         new_window.geometry("400x300")
         tk_label = TKLabel(new_window, text=f"{label} 창")
-        label = tk_label.create_label()
-        label.pack(pady=10)
+        label_widget = tk_label.create_label()
+        label_widget.pack(pady=10)
+
+    def show_short_text_window(self):
+        self.root.withdraw()
+        new_window = Toplevel(self.root)
+        new_window.title("짧은글 연습")
+        ShortTextWindow(master=new_window)
