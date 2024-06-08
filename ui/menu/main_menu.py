@@ -1,14 +1,24 @@
 import os
 import customtkinter as ctk
 from PIL import Image, ImageTk
+from tkinter import Frame, LEFT, RIGHT, X
 
-from ui.views.short_text.short_text import ShortTextWindow
-from ui.widgets.tkbutton import TKButton
-from tkinter import Toplevel, Frame, LEFT, RIGHT, X
 from config import IMG_LOCATION
 from ui.widgets.tklabel import TKLabel
+from ui.widgets.tkbutton import TKButton
 
-MAIN_MENU = ["낱말 연습", "짧은글 연습", "긴글 연습", "파일 불러오기", "통계", "도움말"]
+from ui.views.short_text.short_text import ShortTextWindow
+from ui.views.long_text.select_text import SelectTextWindow
+
+# TODO: 이름을 필요한 창 클래스로 변경해 주세요.
+MAIN_MENU = {
+    "낱말 연습": "WordPracticeWindow",
+    "짧은글 연습": ShortTextWindow,
+    "긴글 연습": SelectTextWindow,
+    "파일 불러오기": "FileLoadWindow",
+    "통계": "StatisticsWindow",
+    "도움말": "HelpWindow"
+}
 
 
 class MainMenu:
@@ -17,6 +27,8 @@ class MainMenu:
         self.master = master
         self.default_text_color = default_text_color
         self.create_menu_bar()
+        self.root.protocol("WM_DELETE_WINDOW", self.quit_function)
+        self.pending_tasks = []
 
     def create_menu_bar(self):
         icon_path = os.path.join(IMG_LOCATION, "ic_keyboard.png")
@@ -46,7 +58,7 @@ class MainMenu:
             text="",
             fg_color="#666666",
             hover_color="#666666",
-            command=self.master.quit,
+            command=self.quit_function,
             width=20,
             height=20
         )
@@ -57,39 +69,35 @@ class MainMenu:
                                       border_color="black", corner_radius=0)
         menu_container.pack(side="top", fill="x", pady=5)
 
-        # Define actions for each menu item
-        actions = {
-            "낱말 연습": lambda: self.open_new_window("낱말 연습"),
-            "짧은글 연습": self.show_short_text_window,
-            "긴글 연습": lambda: self.open_new_window("긴글 연습"),
-            "파일 불러오기": lambda: self.open_new_window("파일 불러오기"),
-            "통계": lambda: self.open_new_window("통계"),
-            "도움말": lambda: self.open_new_window("도움말")
-        }
-
-        for label in MAIN_MENU:
-            action = actions.get(label, lambda: self.open_new_window(label))  # Default action if not defined
+        for label, window_class in MAIN_MENU.items():
             button_frame = TKButton(
                 master=menu_container,
                 text=label,
-                onclick=action
+                onclick=lambda wc=window_class: self.open_window(wc)
             ).create_button(fg_color="#AAAAAA")
             button_frame.pack(side="left", padx=1, pady=1, fill='y')
 
-        for i in range(len(MAIN_MENU)):
-            menu_container.grid_columnconfigure(i, weight=1, minsize=70)
+    def open_window(self, window_class):
+        if isinstance(window_class, str):
+            print(f"{window_class} 구현 되었나요? 🤔")  # 미구현 클래스를 위한 메시지 출력
+            return
 
-    def open_new_window(self, label):
-        self.root.withdraw()
-        new_window = Toplevel(self.root)
-        new_window.title(label)
-        new_window.geometry("400x300")
-        tk_label = TKLabel(new_window, text=f"{label} 창")
-        label_widget = tk_label.create_label()
-        label_widget.pack(pady=10)
+        self.quit_function()  # 창을 닫기 전에 quit_function을 호출하여 안전하게 종료 처리
 
-    def show_short_text_window(self):
-        self.root.withdraw()
-        new_window = Toplevel(self.root)
-        new_window.title("짧은글 연습")
-        ShortTextWindow(master=new_window)
+        new_root = ctk.CTk()  # 새 root 인스턴스 생성
+        new_root.geometry("1024x768")
+        new_root.configure(fg_color="#AAAAAA")
+
+        new_root.title(window_class.__name__)  # 클래스 이름을 제목으로 사용
+        window_class(master=new_root)  # 윈도우 클래스 인스턴스 생성
+        new_root.mainloop()  # 새 창의 mainloop를 시작
+
+    def quit_function(self):
+        # 모든 after 작업을 취소
+        for task in self.pending_tasks:
+            self.root.after_cancel(task)
+        try:
+            self.root.quit()
+            self.root.destroy()
+        except Exception as e:
+            print(f"Error during closing window: {e}")
