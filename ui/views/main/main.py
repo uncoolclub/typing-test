@@ -6,6 +6,7 @@ from config import IMG_LOCATION
 from lib.image_resizer import ImageResizer
 from ui.menu.main_menu import MainMenu
 from ui.widgets.tklabel import TKLabel
+from utils.center_window import center_window
 
 
 def main():
@@ -19,9 +20,12 @@ def main():
     ctk.set_appearance_mode("light")  # 모드 설정: light/dark
     ctk.set_default_color_theme("blue")  # 테마 색상 설정
 
+    # 윈도우 위치를 화면 중앙으로 설정
+    center_window(root)
+
     # 메인 프레임 설정
     frame = ctk.CTkFrame(master=root, width=1024, height=728, fg_color="#AAAAAA")
-    frame.pack(pady=10, padx=10, fill="both", expand=True)
+    frame.pack(pady=10, padx=5, fill="both", expand=True)
 
     # 메인 메뉴 초기화 및 생성
     MainMenu(root=root, master=frame)
