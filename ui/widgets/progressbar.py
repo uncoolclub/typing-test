@@ -31,7 +31,7 @@ class Progressbar:
         label.pack(side="left", padx=5)
 
         # Progressbar 값 표시할 Label
-        self.value_label = Label(frame, text=f"{self.value}", font=tk_font, bg="#666666", fg="white", width=5)
+        self.value_label = Label(frame, text=f"{self.value}", font=tk_font, bg="#666666", fg="white", width=10)
         self.value_label.pack(side="left")
 
         progressbar_frame = Frame(frame, relief=SUNKEN, bd=2, bg="#AAAAAA", width=200, height=30)
