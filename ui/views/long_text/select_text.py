@@ -3,7 +3,7 @@ from ui.global_font import GlobalFont
 from ui.widgets.tklistbox import TKListbox
 import customtkinter as ctk
 
-SELECT_TEXTS = [
+SELECT_LIST_BOX = [
     {"label": "하늘과 바람과 별과 시", "file_name": "default2.txt"},
     {"label": "애국가", "file_name": "default1.txt"},
     {"label": "동백꽃", "file_name": "default4.txt"},
@@ -30,7 +30,7 @@ class SelectTextWindow:
                                        font=font, labelanchor="n")
         select_text_frame.pack(padx=70, pady=10, fill="both", expand=True)
 
-        custom_listbox = TKListbox(select_text_frame, SELECT_TEXTS, on_item_selected=self.on_item_selected)
+        custom_listbox = TKListbox(select_text_frame, SELECT_LIST_BOX, on_item_selected=self.on_item_selected)
         custom_listbox.create_listbox()
 
         label_frame = Frame(frame, relief=GROOVE, bd=2, bg="#AAAAAA")
