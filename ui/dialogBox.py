@@ -43,8 +43,8 @@ class DialogBox(QDialog):
         button2 = QPushButton('별 헤는 밤', self)
 
         # 버튼 클릭 시 호출할 메서드 연결
-        button1.clicked.connect(lambda: self.openWindow('./resource/text/default1.txt'))
-        button2.clicked.connect(lambda: self.openWindow('./resource/text/default2.txt'))
+        button1.clicked.connect(lambda: self.openWindow('default1.txt'))
+        button2.clicked.connect(lambda: self.openWindow('default2.txt'))
 
         button_layout.addWidget(button1)
         button_layout.addWidget(button2)
@@ -56,6 +56,6 @@ class DialogBox(QDialog):
 
         self.setLayout(layout)
 
-    def openWindow(self, file_path):
+    def openWindow(self, file_name):
         self.close()
-        self.parent.showWindow(file_path)
+        self.parent.showWindow(file_name)
