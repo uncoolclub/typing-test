@@ -48,7 +48,7 @@ class TKDialog(tk.Toplevel):
 
         # Build the custom content inside content_frame
         if self.content_frame_builder:
-            self.content_frame_builder(content_frame, self)
+            self.content_frame_builder(frame=content_frame, dialog=self)
 
     def set_icon(self, header_frame):
         icon_path = os.path.join(IMG_LOCATION, self.icon_name)

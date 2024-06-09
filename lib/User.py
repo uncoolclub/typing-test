@@ -10,7 +10,7 @@ class User:
     # avg_keystrokes = 80  # 평균 타수
 
     def __init__(self, username):
-        self.file_path = f"./User/personal/{username}.json"
+        self.file_path = f"../User/personal/{username}.json"
         self.userMJ = ManagerJSON(self.file_path)
         self.data = self.userMJ.data
         

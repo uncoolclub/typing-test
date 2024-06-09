@@ -9,6 +9,7 @@ from ui.widgets.tkbutton import TKButton
 
 from ui.views.short_text.short_text import ShortTextWindow
 from ui.views.long_text.select_text import SelectTextWindow
+from ui.views.user.statistics import StatisticsDialog
 
 # TODO: 이름을 필요한 창 클래스로 변경해 주세요.
 MAIN_MENU = {
@@ -16,15 +17,16 @@ MAIN_MENU = {
     "짧은글 연습": ShortTextWindow,
     "긴글 연습": SelectTextWindow,
     "파일 불러오기": "FileLoadWindow",
-    "통계": "StatisticsWindow",
+    "통계": StatisticsDialog,
     "도움말": "HelpWindow"
 }
 
 
 class MainMenu:
-    def __init__(self, root, master, default_text_color="white"):
+    def __init__(self, root, master, user, default_text_color="white"):
         self.root = root
         self.master = master
+        self.user = user
         self.default_text_color = default_text_color
         self.create_menu_bar()
         self.root.protocol("WM_DELETE_WINDOW", self.quit_function)
@@ -89,7 +91,8 @@ class MainMenu:
         new_root.configure(fg_color="#AAAAAA")
 
         new_root.title(window_class.__name__)  # 클래스 이름을 제목으로 사용
-        window_class(master=new_root)  # 윈도우 클래스 인스턴스 생성
+        # TODO: user 사용하는 class만 user parameter 전달
+        window_class(master=new_root, user=self.user)  # 윈도우 클래스 인스턴스 생성
         new_root.mainloop()  # 새 창의 mainloop를 시작
 
     def quit_function(self):
