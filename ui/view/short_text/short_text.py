@@ -1,6 +1,7 @@
 import os
 import time
 import threading
+import tkinter
 
 import customtkinter as ctk
 from tkinter import Toplevel, Frame, RAISED, SUNKEN, LabelFrame, Label, Entry, StringVar
@@ -25,6 +26,7 @@ class ShortTextWindow:
         self.input_text_var = StringVar()
         self.input_text_var.trace_add("write", self.on_text_changed)
         self.create_window()
+        self.max_length = 0
 
     def create_window(self):
         new_window = Toplevel(self.master)
@@ -112,15 +114,20 @@ class ShortTextWindow:
         self.input_entry = Entry(bottom_frame, textvariable=self.input_text_var, font=self.default_font, relief="flat", bd=0, bg="white",
                                  insertbackground="black", selectbackground="black", selectforeground="white")
         self.input_entry.pack(side="left", fill="x", expand=True, padx=5)
-        self.input_entry.bind("<Return>", self.on_enter)
+        # self.input_entry.bind("<Return>", self.on_enter)
 
         self.timer_label = Timer(master=bottom_frame, text="00:00", font=self.default_font, bg="#AAAAAA", anchor="e")
         self.timer_label.pack(side="right", padx=5, pady=5)
         self.timer_label.start()
 
         self.measure_manager.startTest(self.texts[self.current_sentence_index])
-        threading.Timer(1, self.update_speed_and_accuracy).start()
-        # self.timer_label.after(1000, self.Test)
+        self.input_entry.bind('<KeyRelease>', self.limit_text_length)
+
+        threading.Timer(0.5, self.refresh).start()
+
+    def refresh(self):
+        self.update_speed_and_accuracy()
+        threading.Timer(0.5, self.refresh).start()
 
     def on_enter(self, event):
         text = self.input_entry.get()
@@ -129,6 +136,10 @@ class ShortTextWindow:
 
     def on_text_changed(self, *args):
         text = self.input_entry.get()
+        max_length = len(self.measure_manager.sentence)
+        if len(text) > max_length + 1:
+            self.input_entry.delete(max_length, tkinter.END)
+
         self.measure_manager.onTextChanged(text)
         self.update_speed_and_accuracy()
 
@@ -137,11 +148,15 @@ class ShortTextWindow:
         self.current_speed_label.update_value(cpm, unit="타/분")
         self.max_speed_label.update_value(max_cpm, unit="타/분")
 
-        self.results["typed_chars"].configure(text=f"{self.measure_manager.total_len}타")
-        self.results["correct_chars"].configure(text=f"{cpm:.0f}타")
-        self.results["practice_time"].configure(text=f"{self.measure_manager.elapsed_time}초")
+        self.results["typed_chars"].configure(text=f"{self.measure_manager.num_chars}타")
+        mismatched_characters = self.measure_manager.total_mismatched_characters + self.measure_manager.mismatched_characters
+        if(mismatched_characters < 0):
+            mismatched_characters = 0
+
+        self.results["correct_chars"].configure(text=f"{self.measure_manager.num_chars - mismatched_characters}타")
+        self.results["practice_time"].configure(text=f"{int(self.measure_manager.elapsed_time)}초")
         self.results["current_speed"].configure(text=f"{cpm:.0f}타/분")
-        self.results["typed_chars"].configure(text=f"{len(self.input_entry.get())}타")
+        # self.results["typed_chars"].configure(text=f"{len(self.input_entry.get())}타")
 
         accuracy = self.measure_manager.calculate_overall_accuracy([self.input_entry], [self.texts[self.current_sentence_index]])
         self.accuracy_label.update_value(accuracy, unit="%")
@@ -152,17 +167,18 @@ class ShortTextWindow:
             typing_text_length = len(text)
             current_sentence_length = len(self.texts[self.current_sentence_index])
 
-            print('can_move_to_next_line', typing_text_length > current_sentence_length)
+            print('can_move_to_next_line', typing_text_length >= current_sentence_length)
             return typing_text_length >= current_sentence_length
         return False
 
     def move_to_next_line(self):
         self.current_sentence_index += 1
         if self.current_sentence_index < len(self.texts):
-            self.input_entry.delete(0, 'end')
+            # self.update_speed_and_accuracy()
             self.short_text_label.configure(text=self.texts[self.current_sentence_index])
+
             self.measure_manager.nextTest(self.texts[self.current_sentence_index])
-            self.update_speed_and_accuracy()
+            self.input_entry.delete(0, 'end')
         else:
             self.input_entry.configure(state='disabled')
             self.short_text_label.configure(text="연습 완료!")
@@ -170,6 +186,19 @@ class ShortTextWindow:
     def check_accuracy_and_move_to_next_line(self, text):
         if self.can_move_to_next_line(text):
             self.move_to_next_line()
+
+    def limit_text_length(self, event):
+        current_text = self.input_entry.get()
+        max_length = len(self.measure_manager.sentence)
+        if event.keysym == 'Return':
+            if len(current_text)> max_length - 1:
+                self.move_to_next_line()
+                self.input_entry.delete(self.max_length, tkinter.END)
+
+        else:
+            if len(current_text) > max_length:
+                self.move_to_next_line()
+                self.input_entry.delete(self.max_length, tkinter.END)
 
 if __name__ == "__main__":
     font_path = os.path.abspath("../../../resource/fonts/DOSMyungjo.ttf")
