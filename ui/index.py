@@ -9,6 +9,7 @@ from config import FONT_LOCATION, IMG_LOCATION, SVG_LOCATION
 class Index(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.user = parent.user
 
         self.setWindowTitle("타자 연습")
         self.setFixedSize(1024, 768)
@@ -94,7 +95,7 @@ class Index(QWidget):
         button_layout.setContentsMargins(0, 0, 0, 0)
         button_layout.setSpacing(10)
 
-        button_texts = ["자리 연습", "낱말 연습", "짧은 글 연습", "긴 글 연습", "놀이", "환경 설정", "끝"]
+        button_texts = ["자리 연습", "낱말 연습", "짧은 글 연습", "긴 글 연습", "통계", "환경 설정", "끝"]
         icons = [
             os.path.join(SVG_LOCATION, 'ic_documents.svg'),
             os.path.join(SVG_LOCATION, 'ic_chat.svg'),
@@ -105,7 +106,7 @@ class Index(QWidget):
             os.path.join(SVG_LOCATION, 'ic_documents.svg')
         ]
         connect_func = [
-            self.showDialogBox,self.showDialogBox,self.showDialogBox,self.showDialogBox,self.showDialogBox,self.showDialogBox,self.closeWindow,
+            self.showDialogBox,self.showDialogBox,self.showDialogBox,self.showDialogBox,self.showAnalysis,self.showDialogBox,self.closeWindow,
         ]
 
         for text, icon_path, func in zip(button_texts, icons, connect_func):
@@ -161,6 +162,10 @@ class Index(QWidget):
         from ui.dialogBox import DialogBox
         dialog = DialogBox(self)
         dialog.exec_()
+
+    def showAnalysis(self):
+        from ui.statistics import Statistic
+        self.statistic = Statistic(self.user.getRecord())
 
     def closeWindow(self):
         self.close()

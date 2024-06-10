@@ -1,5 +1,5 @@
 from tkinter import Frame, SUNKEN, Label
-from ui.font_loader import FontLoader
+from ui.global_font import GlobalFont
 import customtkinter as ctk
 
 
@@ -20,7 +20,7 @@ class Progressbar:
         if font is None:
             font = self.default_font
 
-        font_family, font_size = FontLoader.load_custom_font(font[0], size=font[1])
+        font_family, font_size = GlobalFont.get_font()
         tk_font = (font_family, font_size)
 
         # 프레임 생성

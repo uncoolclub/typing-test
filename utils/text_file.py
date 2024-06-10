@@ -1,15 +1,16 @@
 import os
 
-class TextFile():
+
+class TextFile:
     def __init__(self, file_name, base_path=None):
         if base_path is None:
             # 현재 파일의 부모 디렉토리로부터 기본 경로 설정
-            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../resource/text'))
+            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../resource/text'))
         self.file_path = ""
         self.file_name = file_name
-        self.readText(file_name, base_path)
+        self.read_text(file_name, base_path)
 
-    def readText(self, file_name, base_path, _encoding="UTF-8"):
+    def read_text(self, file_name, base_path, _encoding="UTF-8"):
         self.file_name = file_name.split(".")[0]
         self.file_path = os.path.join(base_path, file_name)
 
@@ -21,5 +22,5 @@ class TextFile():
                 if line:  # 빈 줄이 아닌 경우에만 리스트에 추가
                     self.text_list.append(line)
 
-    def getText(self):
+    def get_text(self):
         return self.text_list

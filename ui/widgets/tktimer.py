@@ -1,7 +1,7 @@
 import tkinter as tk
 
 
-class Timer(tk.Label):
+class TKTimer(tk.Label):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
         self.time_elapsed = 0
