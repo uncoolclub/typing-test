@@ -112,16 +112,17 @@ class ShortTextWindow:
             result_label.grid(row=row, column=1, sticky="e", padx=20, pady=5)
 
         # 입력 및 타이머 설정
-        self.input_frame = TKInputFrame(self.master, self.on_enter, self.on_text_changed, label_text="한글-2",
+        self.input_frame = TKInputFrame(self.master, self.on_keyrelease, self.on_text_changed, label_text="한글-2",
                                                font=global_font)
         self.input_frame.frame.pack(side="bottom", pady=(0, 10))
 
         self.measure_manager.startTest(self.texts[self.current_sentence_index])
-        self.input_frame.input_entry.bind('<KeyRelease>', self.limit_text_length)
+        # self.input_frame.input_entry.bind('<KeyRelease>', self.on_keyrelease)
 
         threading.Timer(0.5, self.refresh).start()
 
     def refresh(self):
+        self.on_text_changed()
         self.update_speed_and_accuracy()
         threading.Timer(0.5, self.refresh).start()
 
@@ -146,14 +147,9 @@ class ShortTextWindow:
         self.max_speed_label.update_value(max_cpm, unit="타/분")
 
         self.results["typed_chars"].configure(text=f"{self.measure_manager.num_chars}타")
-        mismatched_characters = self.measure_manager.total_mismatched_characters + self.measure_manager.mismatched_characters
-        if(mismatched_characters < 0):
-            mismatched_characters = 0
-
-        self.results["correct_chars"].configure(text=f"{self.measure_manager.num_chars - mismatched_characters}타")
+        self.results["correct_chars"].configure(text=f"{self.measure_manager.correct_characters}타")
         self.results["practice_time"].configure(text=f"{int(self.measure_manager.elapsed_time)}초")
         self.results["current_speed"].configure(text=f"{cpm:.0f}타/분")
-        self.results["typed_chars"].configure(text=f"{len(self.input_frame.input_entry.get())}타")
 
         accuracy = self.measure_manager.calculate_overall_accuracy([self.input_frame.input_entry],
                                                                    [self.texts[self.current_sentence_index]])
@@ -176,7 +172,8 @@ class ShortTextWindow:
         if self.current_sentence_index < len(self.texts):
             # self.update_speed_and_accuracy()
             self.short_text_label.configure(text=self.texts[self.current_sentence_index])
-            self.measure_manager.nextTest(self.texts[self.current_sentence_index])
+            self.measure_manager.resetTest()
+            self.measure_manager.startTest(self.texts[self.current_sentence_index])
             self.input_frame.input_entry.delete(0, 'end')
         else:
             self.input_frame.input_entry.configure(state='disabled')
@@ -190,18 +187,17 @@ class ShortTextWindow:
 
         return False
 
-    def limit_text_length(self, event):
-        current_text = self.input_frame.input_entry.get()
+    def on_keyrelease(self, text, event):
         max_length = len(self.measure_manager.sentence)
         if event.keysym == 'Return':
-            if len(current_text)> max_length - 1:
+            if len(text)> max_length - 1:
                 self.move_to_next_line()
                 self.input_frame.input_entry.delete(self.max_length, END)
 
         else:
-            if len(current_text) > max_length:
+            if len(text) > max_length:
                 self.move_to_next_line()
-                self.input_frame.input_entry.delete(self.max_length, tkinter.END)
+                self.input_frame.input_entry.delete(self.max_length, END)
 
 if __name__ == "__main__":
     font_family, font_size = GlobalFont.get_font()

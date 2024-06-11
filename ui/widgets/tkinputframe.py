@@ -30,16 +30,17 @@ class TKInputFrame:
                                  bg="white", insertbackground="black", selectbackground="black",
                                  selectforeground="white")
         self.input_entry.pack(side="left", fill="x", expand=True, padx=5)
-        self.input_entry.bind("<Return>", self.on_enter)  # Enter 키 입력 시 호출될 함수 등록
+        # self.input_entry.bind("<Return>", self.on_keyrelrese)  # Enter 키 입력 시 호출될 함수 등록
+        self.input_entry.bind('<KeyRelease>', self.on_keyrelease)
 
         # 타이머 레이블 생성
         timer_label = TKTimer(master=self.frame, text="00:00", font=self.font, bg="#AAAAAA", anchor="e")
         timer_label.pack(side="right", padx=5, pady=5)
         timer_label.start()  # 타이머 시작
 
-    def on_enter(self, event):
+    def on_keyrelease(self, event):
         text = self.input_entry.get()  # 입력된 텍스트 가져오기
-        should_delete = self.on_enter_callback(text)  # 콜백 함수 호출
+        should_delete = self.on_enter_callback(text, event)  # 콜백 함수 호출
 
         if should_delete:
             self.input_entry.delete(0, 'end')  # 입력 필드 초기화
