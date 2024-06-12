@@ -1,6 +1,7 @@
 import os.path
+import threading
 import customtkinter as ctk
-from tkinter import Frame, RAISED, SUNKEN, LabelFrame, Label
+from tkinter import Frame, RAISED, SUNKEN, LabelFrame, Label, END
 from PIL import Image, ImageTk
 
 from config import IMG_LOCATION
@@ -28,6 +29,7 @@ class ShortTextWindow:
 
         # 사용자 인터페이스 생성
         self.create_window()
+        self.max_length = 0
 
     def create_window(self):
         # 메인 프레임 설정
@@ -110,20 +112,31 @@ class ShortTextWindow:
             result_label.grid(row=row, column=1, sticky="e", padx=20, pady=5)
 
         # 입력 및 타이머 설정
-        self.input_frame = TKInputFrame(self.master, self.on_enter, self.on_text_changed, label_text="한글-2",
-                                               font=global_font)
+        self.input_frame = TKInputFrame(self.master, self.on_keyrelease, self.on_text_changed, label_text="한글-2",
+                                        font=global_font)
         self.input_frame.frame.pack(side="bottom", pady=(0, 10))
 
         self.measure_manager.startTest(self.texts[self.current_sentence_index])
+        # self.input_frame.input_entry.bind('<KeyRelease>', self.on_keyrelease)
 
-    # 엔터 키 입력 이벤트 처리
-    def on_enter(self, text):
-        should_delete = self.check_accuracy_and_move_to_next_line(text)
+        threading.Timer(0.5, self.refresh).start()
 
-        return should_delete
+    def refresh(self):
+        self.on_text_changed()
+        self.update_speed_and_accuracy()
+        threading.Timer(0.5, self.refresh).start()
 
-    # 텍스트 변경 이벤트 처리
-    def on_text_changed(self, text):
+    def on_enter(self, event):
+        text = self.input_frame.input_entry.get()
+        self.check_accuracy_and_move_to_next_line(text)
+        return "break"
+
+    def on_text_changed(self, *args):
+        text = self.input_frame.input_entry.get()
+        max_length = len(self.measure_manager.sentence)
+        if len(text) > max_length + 1:
+            self.input_frame.input_entry.delete(max_length, END)
+
         self.measure_manager.onTextChanged(text)
         self.update_speed_and_accuracy()
 
@@ -132,8 +145,11 @@ class ShortTextWindow:
         cpm, max_cpm = self.measure_manager.updateSpeed()
         self.current_speed_label.update_value(cpm, unit="타/분")
         self.max_speed_label.update_value(max_cpm, unit="타/분")
+
+        self.results["typed_chars"].configure(text=f"{self.measure_manager.num_chars}타")
+        self.results["correct_chars"].configure(text=f"{self.measure_manager.correct_characters}타")
+        self.results["practice_time"].configure(text=f"{int(self.measure_manager.elapsed_time)}초")
         self.results["current_speed"].configure(text=f"{cpm:.0f}타/분")
-        self.results["typed_chars"].configure(text=f"{len(self.input_frame.input_entry.get())}타")
 
         accuracy = self.measure_manager.calculate_overall_accuracy([self.input_frame.input_entry],
                                                                    [self.texts[self.current_sentence_index]])
@@ -142,9 +158,8 @@ class ShortTextWindow:
 
     # 다음 줄로 이동 가능 여부 판단
     def can_move_to_next_line(self, text):
-        print(text, self.current_sentence_index, self.texts)
-        if self.current_sentence_index < len(self.texts):
-            typing_text_length = len(text.rstrip())
+        if self.current_sentence_index <= len(self.texts):
+            typing_text_length = len(text)
             current_sentence_length = len(self.texts[self.current_sentence_index])
 
             print('can_move_to_next_line', typing_text_length >= current_sentence_length)
@@ -155,10 +170,11 @@ class ShortTextWindow:
     def move_to_next_line(self):
         self.current_sentence_index += 1
         if self.current_sentence_index < len(self.texts):
+            # self.update_speed_and_accuracy()
             self.short_text_label.configure(text=self.texts[self.current_sentence_index])
-            self.input_frame.input_entry.delete(0, 'end')
+            self.measure_manager.resetTest()
             self.measure_manager.startTest(self.texts[self.current_sentence_index])
-            self.update_speed_and_accuracy()
+            self.input_frame.input_entry.delete(0, 'end')
         else:
             self.input_frame.input_entry.configure(state='disabled')
             self.short_text_label.configure(text="연습 완료!")
@@ -170,6 +186,18 @@ class ShortTextWindow:
             return True
 
         return False
+
+    def on_keyrelease(self, text, event):
+        max_length = len(self.measure_manager.sentence)
+        if event.keysym == 'Return':
+            if len(text) > max_length - 1:
+                self.move_to_next_line()
+                self.input_frame.input_entry.delete(self.max_length, END)
+
+        else:
+            if len(text) > max_length:
+                self.move_to_next_line()
+                self.input_frame.input_entry.delete(self.max_length, END)
 
 
 if __name__ == "__main__":

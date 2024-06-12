@@ -3,6 +3,7 @@ from ui.global_font import GlobalFont
 from ui.widgets.tklistbox import TKListbox
 import customtkinter as ctk
 
+# @TODO: 파일명에 맞게 파일을 추가해 주세요.
 SELECT_LIST_BOX = [
     {"label": "하늘과 바람과 별과 시", "file_name": "default2.txt"},
     {"label": "애국가", "file_name": "default1.txt"},
