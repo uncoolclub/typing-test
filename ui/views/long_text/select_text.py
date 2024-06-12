@@ -20,7 +20,8 @@ class SelectTextWindow:
     def __init__(self, master):
         self.master = master
         self.create_window(master)
-
+    def append(self, data):
+        SELECT_LIST_BOX.append(data)
     def create_window(self, master):
         from ui.window.default_window import DefaultWindow
         custom_window = DefaultWindow(root=master, master=master, title="글 선택", window_size="720x768")
@@ -52,7 +53,8 @@ class SelectTextWindow:
         new_root.configure(fg_color="#AAAAAA")
 
         from ui.views.long_text.long_text import LongTextWindow
-        LongTextWindow(new_root, file_name=item['file_name'], label=item['label'])
+
+        LongTextWindow(new_root, file_name=item['file_name'], label=item['label'], base_path=['file_path'])
         new_root.mainloop()
 
 

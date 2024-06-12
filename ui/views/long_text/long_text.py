@@ -11,7 +11,7 @@ from utils.manager_json import save_json
 
 
 class LongTextWindow:
-    def __init__(self, master, label, file_name):
+    def __init__(self, master, label, file_name, base_path = None):
         self.master = master
         self.label = label
         self.file_name = file_name
@@ -19,7 +19,7 @@ class LongTextWindow:
         self.lines_per_page = 5  # 한 페이지에 표시할 텍스트 줄 수
         self.current_label_index = 0  # 현재 레이블 인덱스를 추적하기 위한 변수
         self.results_window_open = False
-        self.text_file = TextFile(self.file_name)  # 텍스트 파일 로드
+        self.text_file = TextFile(self.file_name, base_path)  # 텍스트 파일 로드
         self.text_content = self.text_file.get_text()  # 텍스트 파일에서 내용 가져오기
         self.measure_manager = MeasureManager()
         self.create_window()
