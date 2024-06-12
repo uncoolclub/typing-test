@@ -9,13 +9,14 @@ from ui.widgets.tkbutton import TKButton
 
 from ui.views.short_text.short_text import ShortTextWindow
 from ui.views.long_text.select_text import SelectTextWindow
+from ui.views.user.statistics import StatisticsWindow
 
 # TODO: 이름을 필요한 창 클래스로 변경해 주세요.
 MAIN_MENU = {
     "짧은글 연습": ShortTextWindow,
     "긴글 연습": SelectTextWindow,
     "파일 불러오기": "FileLoadWindow",
-    "통계": "StatisticsWindow",
+    "통계": StatisticsWindow,
 }
 
 
