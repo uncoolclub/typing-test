@@ -3,6 +3,7 @@ from tkinter import messagebox, Toplevel, Frame, RAISED
 from ui.global_font import GlobalFont
 from ui.views.main.main import Main
 from ui.widgets.tklabel import TKLabel
+from utils.user import User
 
 
 class NicknameInputDialog:
@@ -13,6 +14,7 @@ class NicknameInputDialog:
         self.create_dialog()
 
     def create_dialog(self):
+        # 기본 창 설정
         self.window = Toplevel(self.master)
         self.window.title("닉네임 입력")
         self.window.geometry("720x280")
@@ -29,14 +31,15 @@ class NicknameInputDialog:
                                     insertbackground="black", selectbackground="black", selectforeground="white")
         input_entry.pack(side="left", fill="x", expand=True, padx=5)
 
-        submit_button = tk.Button(frame, text="확인", command=lambda: self.enter_nickname(input_entry.get()))
+        submit_button = tk.Button(frame, text="확인", command=lambda: self.enter_nickname(input_entry.get())) # 버튼 이벤트 연결
         submit_button.pack(pady=10)
 
     def enter_nickname(self, nickname):
+        # 텍스트가 영어인지 체크
         if nickname.isalpha() and nickname.isascii():
             self.nickname = nickname
-            self.root.create_user(nickname)
-            self.window.destroy()
-            Main(self.master)
+            User().set_nickname(nickname) # user 생성
+            self.window.destroy() # 현재 떠있는 닉네임 입력 창 닫기
+            Main(self.master) # 메인 노출
         else:
             messagebox.showwarning("warning", "영어만 입력 가능합니다.")
