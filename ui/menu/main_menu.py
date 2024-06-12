@@ -12,12 +12,10 @@ from ui.views.long_text.select_text import SelectTextWindow
 
 # TODO: 이름을 필요한 창 클래스로 변경해 주세요.
 MAIN_MENU = {
-    "낱말 연습": "WordPracticeWindow",
     "짧은글 연습": ShortTextWindow,
     "긴글 연습": SelectTextWindow,
     "파일 불러오기": "FileLoadWindow",
     "통계": "StatisticsWindow",
-    "도움말": "HelpWindow"
 }
 
 
