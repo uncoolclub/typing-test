@@ -3,7 +3,7 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 
 from config import IMG_LOCATION
-from lib.image_resizer import ImageResizer
+from utils.image_resizer import ImageResizer
 from ui.menu.main_menu import MainMenu
 from ui.widgets.tklabel import TKLabel
 from utils.center_window import center_window

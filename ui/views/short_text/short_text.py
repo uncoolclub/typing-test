@@ -8,7 +8,7 @@ from config import IMG_LOCATION
 from ui.widgets.tkinputframe import TKInputFrame
 from utils.text_file import TextFile
 from ui.global_font import GlobalFont
-from ui.widgets.progressbar import Progressbar
+from ui.widgets.tkprogressbar import TKProgressbar
 from logic.measure.measure_manager import MeasureManager
 from ui.widgets.tklabel import TKLabel
 
@@ -63,18 +63,18 @@ class ShortTextWindow:
         # 최대 속도 및 현재 속도 진행률 표시
         inner_frame = Frame(progress_frame, bg="#AAAAAA")
         inner_frame.pack(fill="both", pady=30)
-        self.max_speed_label = Progressbar(master=inner_frame, text="최고 속도: ", default_font=global_font, value=0,
+        self.max_speed_label = TKProgressbar(master=inner_frame, text="최고 속도: ", default_font=global_font, value=0,
                                            max_value=500, progress_color="#A80000")
         self.max_speed_label_frame = self.max_speed_label.create_widgets()
         self.max_speed_label_frame.pack(padx=20, pady=10, fill="x")
 
-        self.current_speed_label = Progressbar(master=inner_frame, text="현재 속도: ", default_font=global_font, value=0,
+        self.current_speed_label = TKProgressbar(master=inner_frame, text="현재 속도: ", default_font=global_font, value=0,
                                                max_value=500, progress_color="#0000A8")
         self.current_speed_label_frame = self.current_speed_label.create_widgets()
         self.current_speed_label_frame.pack(padx=20, pady=10, fill="x")
 
         # 정확도 진행률 표시
-        self.accuracy_label = Progressbar(master=inner_frame, text="정확도: ", default_font=global_font, value=0,
+        self.accuracy_label = TKProgressbar(master=inner_frame, text="정확도: ", default_font=global_font, value=0,
                                           max_value=100, progress_color="#00A8A8")
         self.accuracy_label_frame = self.accuracy_label.create_widgets()
         self.accuracy_label_frame.pack(padx=20, pady=10, fill="x")

@@ -3,7 +3,7 @@ from ui.global_font import GlobalFont
 import customtkinter as ctk
 
 
-class Progressbar:
+class TKProgressbar:
     def __init__(self, master, text, default_font, value=0, max_value=100, progress_color="#0000A0", **kwargs):
         self.progressbar = None
         self.value_label = None

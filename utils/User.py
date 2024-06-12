@@ -1,5 +1,5 @@
-from lib.ManagerJSON import ManagerJSON
-import os
+from utils.ManagerJSON import ManagerJSON
+
 
 class User:
     # num_characters_typed = 100  # 쓰인 글자 수
