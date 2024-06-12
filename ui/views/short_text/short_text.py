@@ -113,7 +113,7 @@ class ShortTextWindow:
 
         # 입력 및 타이머 설정
         self.input_frame = TKInputFrame(self.master, self.on_keyrelease, self.on_text_changed, label_text="한글-2",
-                                               font=global_font)
+                                        font=global_font)
         self.input_frame.frame.pack(side="bottom", pady=(0, 10))
 
         self.measure_manager.startTest(self.texts[self.current_sentence_index])
@@ -190,7 +190,7 @@ class ShortTextWindow:
     def on_keyrelease(self, text, event):
         max_length = len(self.measure_manager.sentence)
         if event.keysym == 'Return':
-            if len(text)> max_length - 1:
+            if len(text) > max_length - 1:
                 self.move_to_next_line()
                 self.input_frame.input_entry.delete(self.max_length, END)
 
@@ -198,6 +198,7 @@ class ShortTextWindow:
             if len(text) > max_length:
                 self.move_to_next_line()
                 self.input_frame.input_entry.delete(self.max_length, END)
+
 
 if __name__ == "__main__":
     font_family, font_size = GlobalFont.get_font()
