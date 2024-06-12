@@ -49,7 +49,7 @@ class TKDialog(tk.Toplevel):
 
         # 커스텀 내용 구성
         if self.content_frame_builder:
-            self.content_frame_builder(content_frame, self)
+            self.content_frame_builder(frame=content_frame, dialog=self)
 
     def set_icon(self, header_frame):
         icon_path = os.path.join(IMG_LOCATION, self.icon_name)  # 아이콘 경로 설정
