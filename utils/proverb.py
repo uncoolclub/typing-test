@@ -1,12 +1,20 @@
 import random
+import os
 
 class Proverb:
-    def __init__(self, filename="./data/data.txt"):
-        self.initProverb()
-        self.loadProverb(filename)
+    def __init__(self, filename="data.txt", base_path=None):
+        if base_path is None:
+            # 현재 파일의 부모 디렉토리로부터 기본 경로 설정
+            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../resource/text'))
+        self.initProverb(filename, base_path)
 
-    def loadProverb(self, filename):
-        with open(filename, 'r', encoding='utf-8') as file:
+    def initProverb(self, _filename, _base_path):
+        self.out_index_list = []
+        self.proverb_index_list = []
+        # file_name = _filename.split(".")[0]
+        file_path = os.path.join(_base_path, _filename)
+
+        with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
         self.proverb_list = [line.strip() for line in lines if line.strip()]
         # `proverb_index_list`를 속담 리스트의 크기로 초기화
@@ -27,7 +35,3 @@ class Proverb:
         random_proverbs = [self.proverb_list[index] for index in random_indices]
 
         return random_proverbs
-    
-    def initProverb(self):
-        self.out_index_list = []
-        self.proverb_index_list = []

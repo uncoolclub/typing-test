@@ -19,13 +19,15 @@ class ResultsWindow:
             # 측정된 시간을 분과 초로 변환
             minutes, seconds = divmod(int(self.measure.elapsed_time), 60)
 
+            result = self.measure.get_result()
             # 라벨에 표시될 정보들
             labels_info = {
-                "쓰인 글자 수:": f"{self.measure.num_chars} 개",
-                "정확한 글자 수:": f"{self.measure.correct_characters} 개",
-                "연습 시간:": f"{minutes:02}:{seconds:02} 초",  # MM:SS 형태로 표시
-                "최고 속도:": f"{self.measure.max_cpm} 타",
-                "정확도:": f"{self.measure.overall_accuracy} %",
+                "총 글자 수:": f"{result['total_matches'] + result['total_mismatches']} 개",
+                "정확한 글자 수:": f"{result['total_matches']} 개",
+                "연습 시간:": f"{result['running_time']} 초",
+                # "연습 시간:": f"{minutes:02}:{seconds:02} 초",  # MM:SS 형태로 표시
+                "최고 속도:": f"{result['max_typing_speed']} 타",
+                "정확도:": f"{result['average_accuracy']} %",
             }
 
             # 정보를 표시할 라벨들을 컨테이너 안에 생성

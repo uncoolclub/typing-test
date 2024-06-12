@@ -6,7 +6,8 @@ from PIL import Image, ImageTk
 
 from config import IMG_LOCATION
 from ui.widgets.tkinputframe import TKInputFrame
-from utils.text_file import TextFile
+# from utils.text_file import TextFile
+from utils.proverb import Proverb
 from ui.global_font import GlobalFont
 from ui.widgets.tkprogressbar import TKProgressbar
 from logic.measure.measure_manager import MeasureManager
@@ -24,8 +25,12 @@ class ShortTextWindow:
         # 측정 관리자와 텍스트 파일 로드
         self.measure_manager = MeasureManager()
         self.current_sentence_index = 0
-        self.text_file = TextFile('default1.txt')
-        self.texts = self.text_file.get_text()
+
+        # self.text_file = TextFile('default1.txt')
+        # self.texts = self.text_file.get_text()
+
+        self.proverb = Proverb()
+        self.texts = self.proverb.getRandomProverb(20)
 
         # 사용자 인터페이스 생성
         self.create_window()
@@ -99,7 +104,7 @@ class ShortTextWindow:
 
         # 결과 표시
         results_labels = [
-            ("쓰인 글자수:", self.results["typed_chars"]),
+            ("총 글자수:", self.results["typed_chars"]),
             ("정확한 글자수:", self.results["correct_chars"]),
             ("연습 시간:", self.results["practice_time"]),
             ("현재 속도:", self.results["current_speed"]),
@@ -116,45 +121,42 @@ class ShortTextWindow:
                                         font=global_font)
         self.input_frame.frame.pack(side="bottom", pady=(0, 10))
 
-        self.measure_manager.startTest(self.texts[self.current_sentence_index])
+        self.measure_manager.startTest()
         # self.input_frame.input_entry.bind('<KeyRelease>', self.on_keyrelease)
 
         threading.Timer(0.5, self.refresh).start()
 
     def refresh(self):
         self.on_text_changed()
-        self.update_speed_and_accuracy()
         threading.Timer(0.5, self.refresh).start()
-
-    def on_enter(self, event):
-        text = self.input_frame.input_entry.get()
-        self.check_accuracy_and_move_to_next_line(text)
-        return "break"
 
     def on_text_changed(self, *args):
         text = self.input_frame.input_entry.get()
-        max_length = len(self.measure_manager.sentence)
+        max_length = len(self.texts[self.current_sentence_index])
         if len(text) > max_length + 1:
             self.input_frame.input_entry.delete(max_length, END)
+            return
 
-        self.measure_manager.onTextChanged(text)
-        self.update_speed_and_accuracy()
+        self.update_calculate()
 
     # 속도 및 정확도 업데이트
-    def update_speed_and_accuracy(self):
-        cpm, max_cpm = self.measure_manager.updateSpeed()
-        self.current_speed_label.update_value(cpm, unit="타/분")
-        self.max_speed_label.update_value(max_cpm, unit="타/분")
+    def update_calculate(self):
+        original_text = self.texts[self.current_sentence_index]
+        input_text = self.input_frame.input_entry.get()
+        accuracy, matches, mismatches, typing_speed = self.measure_manager.calculate(original_text, input_text)
 
-        self.results["typed_chars"].configure(text=f"{self.measure_manager.num_chars}타")
-        self.results["correct_chars"].configure(text=f"{self.measure_manager.correct_characters}타")
+        if accuracy == None:
+            return
+
+        self.current_speed_label.update_value(typing_speed, unit="타/분")
+        self.max_speed_label.update_value(self.measure_manager.max_typing_speed, unit="타/분")
+
+        self.results["typed_chars"].configure(text=f"{matches+mismatches}타")
+        self.results["correct_chars"].configure(text=f"{matches}타")
         self.results["practice_time"].configure(text=f"{int(self.measure_manager.elapsed_time)}초")
-        self.results["current_speed"].configure(text=f"{cpm:.0f}타/분")
-
-        accuracy = self.measure_manager.calculate_overall_accuracy([self.input_frame.input_entry],
-                                                                   [self.texts[self.current_sentence_index]])
+        self.results["current_speed"].configure(text=f"{typing_speed:.0f}타/분")
         self.accuracy_label.update_value(accuracy, unit="%")
-        self.results["accuracy"].configure(text=f"{accuracy:.2f}%")
+        self.results["accuracy"].configure(text=f"{accuracy:.0f}%")
 
     # 다음 줄로 이동 가능 여부 판단
     def can_move_to_next_line(self, text):
@@ -170,11 +172,11 @@ class ShortTextWindow:
     def move_to_next_line(self):
         self.current_sentence_index += 1
         if self.current_sentence_index < len(self.texts):
-            # self.update_speed_and_accuracy()
+            # self.update_calculate()
             self.short_text_label.configure(text=self.texts[self.current_sentence_index])
             self.measure_manager.resetTest()
-            self.measure_manager.startTest(self.texts[self.current_sentence_index])
             self.input_frame.input_entry.delete(0, 'end')
+            self.measure_manager.startTest()
         else:
             self.input_frame.input_entry.configure(state='disabled')
             self.short_text_label.configure(text="연습 완료!")
@@ -188,7 +190,7 @@ class ShortTextWindow:
         return False
 
     def on_keyrelease(self, text, event):
-        max_length = len(self.measure_manager.sentence)
+        max_length = len(self.texts[self.current_sentence_index])
         if event.keysym == 'Return':
             if len(text) > max_length - 1:
                 self.move_to_next_line()
