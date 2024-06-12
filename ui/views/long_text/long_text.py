@@ -21,11 +21,6 @@ class LongTextWindow:
         self.text_content = self.text_file.get_text()  # 텍스트 파일에서 내용 가져오기
         self.measure_manager = MeasureManager()
         self.create_window()
-        # 쓰인글자 self.measure_manager.num_chars = 0
-        # 정확한 글자 self.measure_manager.correct_characters = 0
-        # 연습 시간 self.measure_manager.elapsed_time
-        # 정확도 self.measure_manager.overall_accuracy
-        # 최고속도 self.measure_manager.max_cpm
 
     def create_window(self):
         # 기본 창 설정

@@ -17,6 +17,9 @@ class MeasureManager:
     def endTest(self):
         self.end_time = time.time()
 
+    def nextTest(self):
+        self.next_time = time.time()
+
     def resetTest(self):
         self.start_time = None
         self.next_time = None

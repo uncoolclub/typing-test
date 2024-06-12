@@ -174,9 +174,9 @@ class ShortTextWindow:
         if self.current_sentence_index < len(self.texts):
             # self.update_calculate()
             self.short_text_label.configure(text=self.texts[self.current_sentence_index])
-            self.measure_manager.resetTest()
+            # self.measure_manager.resetTest()
             self.input_frame.input_entry.delete(0, 'end')
-            self.measure_manager.startTest()
+            self.measure_manager.nextTest()
         else:
             self.input_frame.input_entry.configure(state='disabled')
             self.short_text_label.configure(text="연습 완료!")
