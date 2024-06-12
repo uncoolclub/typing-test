@@ -2,7 +2,7 @@ from ui.global_font import GlobalFont
 import customtkinter as ctk
 
 from ui.views.user.nickname import NicknameInputDialog
-from lib.User import User
+from utils.user import User
 
 
 class Index:

@@ -7,7 +7,7 @@ import random
 import os.path
 from config import FONT_LOCATION
 import customtkinter as ctk
-from lib.User import User
+from utils.user import User
 from utils.manager_json import read_json
 
 
