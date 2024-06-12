@@ -1,7 +1,6 @@
 from ui.global_font import GlobalFont
-import tkinter as tk
+import customtkinter as ctk
 
-from ui.views.main.main import Main
 from ui.views.user.nickname import NicknameInputDialog
 from lib.User import User
 
@@ -10,20 +9,20 @@ class Index:
     def __init__(self, master):
         self.master = master
         self.user = None
-        NicknameInputDialog(self.master, self)
+        self.nickname_input_dialog = None
+        self.show_nickname_input_dialog()
+
+    def show_nickname_input_dialog(self):
+        self.nickname_input_dialog = NicknameInputDialog(self.master, self)
+        self.master.mainloop()  # 여기서 mainloop 호출
 
     def create_user(self, nickname):
-        self.user = User(nickname)
-        Main(self.master, self.user)
+        self.user = User().set_nickname(nickname)
 
 
 if __name__ == "__main__":
     font_family, font_size = GlobalFont.get_font()
     tk_font = (font_family, font_size)
 
-    root = tk.Tk()
-    root.withdraw()
+    root = ctk.CTk()
     Index(root)
-    # root.title("메인 윈도우")
-    # root.geometry("1024x768")
-    root.mainloop()

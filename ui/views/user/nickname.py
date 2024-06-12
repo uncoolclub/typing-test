@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, Toplevel, Frame, RAISED
 from ui.global_font import GlobalFont
+from ui.views.main.main import Main
 from ui.widgets.tklabel import TKLabel
 
 
@@ -9,13 +10,12 @@ class NicknameInputDialog:
         self.master = master
         self.root = root
         self.nickname = None
-        self.window = Toplevel(master)
         self.create_dialog()
 
     def create_dialog(self):
-        # new_window = Toplevel(self.master)
+        self.window = Toplevel(self.master)
         self.window.title("닉네임 입력")
-        self.window.geometry("720x480")
+        self.window.geometry("720x280")
         self.window.configure(bg="#AAAAAA")
 
         frame = Frame(self.window, relief=RAISED, bd=2, bg="#AAAAAA")
@@ -37,5 +37,6 @@ class NicknameInputDialog:
             self.nickname = nickname
             self.root.create_user(nickname)
             self.window.destroy()
+            Main(self.master)
         else:
             messagebox.showwarning("warning", "영어만 입력 가능합니다.")

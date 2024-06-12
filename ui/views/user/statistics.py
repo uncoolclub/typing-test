@@ -1,42 +1,47 @@
 import tkinter as tk
 from tkinter import ttk
-from ui.widgets.tkdialog import TKDialog
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.font_manager as fm
 import random
 import os.path
 from config import FONT_LOCATION
+import customtkinter as ctk
+from lib.User import User
+from utils.manager_json import read_json
 
 
-class StatisticsDialog:
-    def __init__(self, master, user):
+class StatisticsWindow:
+    def __init__(self, master):
+        # 기본 창 설정
         self.master = master
-        self.user = user
+        self.master.title("짧은글 연습")
+        self.master.geometry("1024x768")
+        self.master.configure(bg="#AAAAAA")
+
         self.data = self.get_date()
+        self.canvas_frame = None
         self.create_dialog(master)
 
     def create_dialog(self, master):
-        def show_graph(data, frame, dialog):
-            self.canvas = None
-
-            def on_select(event):
-                # 캔버스 그리기 전에 기존 캔버스 지우기
-                if self.canvas is not None:
-                    self.canvas.destroy()
-                value = combobox.get()
-                self.canvas = PlotCanvas(frame, data, value)
-
+        def show_graph(data, frame):
             combobox = ttk.Combobox(frame, values=list(map(str, data.keys())))
             combobox.pack(pady=10)
-            combobox.bind("<<ComboboxSelected>>", on_select)
+            combobox.bind("<<ComboboxSelected>>", lambda event: on_select(combobox.get()))
 
-        dialog = TKDialog(master, master, title="통계", content_frame_builder=lambda frame, dialog: show_graph(data=self.data, frame=frame, dialog=dialog))
-        # lamda로
-        dialog.wait_window()
+            on_select(combobox.get())
+
+        def on_select(key):
+            if self.canvas_frame is not None:
+                self.canvas_frame.destroy()
+
+            if key:
+                self.canvas_frame = PlotCanvas(self.master, self.data, key)
+
+        show_graph(self.data, self.master)
 
     def get_date(self): # user 데이터 그래프로 표현하기 쉽게 보정
-        data = self.user.getRecord()
+        data = read_json(User().get_nickname())
         result = {}
 
         for item in data.keys():
@@ -98,3 +103,7 @@ class PlotCanvas(FigureCanvasTkAgg):
     def destroy(self):
         self.canvas_frame.destroy()
 
+if __name__ == "__main__":
+    root = ctk.CTk()
+    StatisticsWindow(root)
+    root.mainloop()

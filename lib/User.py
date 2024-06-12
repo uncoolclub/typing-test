@@ -1,34 +1,22 @@
-from lib.ManagerJSON import ManagerJSON
-import os
+from utils.manager_json import create_file
+
 
 class User:
-    # num_characters_typed = 100  # 쓰인 글자 수
-    # num_characters_correct = 90  # 맞은 글자 수
-    # practice_time_minutes = 30  # 연습 시간 (분)
-    # accuracy_percentage = 90.0  # 정확도 (%)
-    # max_keystrokes = 120  # 최대 타수
-    # avg_keystrokes = 80  # 평균 타수
+    _instance = None
 
-    def __init__(self, username):
-        self.file_path = f"../User/personal/{username}.json"
-        self.userMJ = ManagerJSON(self.file_path)
-        self.data = self.userMJ.data
-        
-    def saveRecord(self, title, info):
-        self.userMJ.appendJSON(title, info)
+    def __new__(cls, nickname=None):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+            cls._instance.nickname = nickname
+        return cls._instance
 
-    def getRecord(self):
-        return self.userMJ.getData()
+    def __init__(self, nickname=None):
+        pass
 
-    def getTextInfo(self, text_name):
-        return self.data
+    def set_nickname(self, nickname):
+        self.nickname = nickname
+        create_file(nickname)
 
-    def filterText(self, text_name):
-        filterData = []
-        for record in self.data:
-            if record["글"] == text_name:
-                filterData.append(record)
+    def get_nickname(self):
+        return self.nickname
 
-        return filterData
-    
-    
