@@ -2,7 +2,6 @@ from ui.global_font import GlobalFont
 import customtkinter as ctk
 
 from ui.views.user.nickname import NicknameInputDialog
-from utils.user import User
 
 
 class Index:
@@ -10,14 +9,11 @@ class Index:
         self.master = master
         self.user = None
         self.nickname_input_dialog = None
-        self.show_nickname_input_dialog()
+        self.show_nickname_input_dialog() # 첫 인입 시, 닉네임 입력 창 노출
 
     def show_nickname_input_dialog(self):
         self.nickname_input_dialog = NicknameInputDialog(self.master, self)
-        self.master.mainloop()  # 여기서 mainloop 호출
-
-    def create_user(self, nickname):
-        self.user = User().set_nickname(nickname)
+        self.master.mainloop()
 
 
 if __name__ == "__main__":

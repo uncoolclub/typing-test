@@ -28,6 +28,7 @@ class ResultsWindow:
                 # "연습 시간:": f"{minutes:02}:{seconds:02} 초",  # MM:SS 형태로 표시
                 "최고 속도:": f"{result['max_typing_speed']} 타",
                 "정확도:": f"{result['average_accuracy']} %",
+                "평균 타수:": f"{result['average_typing_speed']} 타"
             }
 
             # 정보를 표시할 라벨들을 컨테이너 안에 생성

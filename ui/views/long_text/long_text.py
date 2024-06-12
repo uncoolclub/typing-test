@@ -6,6 +6,8 @@ from ui.global_font import GlobalFont
 from ui.window.default_window import DefaultWindow
 from ui.widgets.tkinputframe import TKInputFrame
 from logic.measure.measure_manager import MeasureManager
+from utils.user import User
+from utils.manager_json import save_json
 
 
 class LongTextWindow:
@@ -84,8 +86,10 @@ class LongTextWindow:
             self.results_window_open = True
             self.input_frame.disable_input()
             self.input_frame.stop_timer()
-
             self.measure_manager.endTest()
+            result = self.measure_manager.get_result()
+            # 결과 저장
+            save_json(User().get_nickname(), self.label, result)
             self.results_window = ResultsWindow(self.master, measure=self.measure_manager)
 
     def on_results_window_closed(self):
