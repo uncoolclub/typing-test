@@ -36,8 +36,10 @@ class MeasureManager:
         self.total_len = 0
         self.sentence = ""
         self.start_time = None
+
     def onTextChanged(self, input_text):
         self.input_field_text = input_text
+
         if self.start_time is None:
             self.start_time = time.time()
 
@@ -65,7 +67,6 @@ class MeasureManager:
 
         return self.current_cpm, self.max_cpm
 
-    # @staticmethod
     def calculate_overall_accuracy(self, input_fields, texts):
         for input_field, base_text in zip(input_fields, texts):
             typed_text = input_field.get()
