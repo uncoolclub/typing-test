@@ -5,7 +5,7 @@ class Proverb:
     def __init__(self, filename="data.txt", base_path=None):
         if base_path is None:
             # 현재 파일의 부모 디렉토리로부터 기본 경로 설정
-            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../resource/text'))
+            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../resource/text/short'))
         self.initProverb(filename, base_path)
 
     def initProverb(self, _filename, _base_path):

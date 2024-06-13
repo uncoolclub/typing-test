@@ -26,7 +26,7 @@ class TKInputFrame:
         input_label.pack(side="left", padx=5, pady=5)
 
         # 입력 필드 생성
-        self.input_entry = Entry(self.frame, textvariable=self.input_text_var, font=self.font, relief="flat", bd=0,
+        self.input_entry = Entry(self.frame, textvariable=self.input_text_var, font=self.font, fg="black", relief="flat", bd=0,
                                  bg="white", insertbackground="black", selectbackground="black",
                                  selectforeground="white")
         self.input_entry.pack(side="left", fill="x", expand=True, padx=5)

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
 from utils.center_window import center_window
+from utils.text_file import TextFile
 
 CUSTOM_LIST_BOX = list()
 
@@ -52,12 +53,14 @@ class FileLoadWindow:
             file_name = file_path.split("/")[-1]  # 파일 경로에서 파일 이름 추출
             print(f"Selected file: {file_name} \n path : {file_path}")  # 선택된 파일명 출력
             CUSTOM_LIST_BOX.append({"label": file_name, "file_name": file_name, "file_path": file_path})
-            self.update_file_listbox()
+            self.save_custom_file(file_path, file_name)
 
-    def update_file_listbox(self):
-        self.file_listbox.delete(0, tk.END)  # 기존 목록 삭제
-        for file_info in CUSTOM_LIST_BOX:
-            self.file_listbox.insert(tk.END, file_info["label"])
+    def save_custom_file(self, file_path, file_name):
+        path_arr = file_path.split("/")
+        remove_file_name = "/".join(path_arr[:-1])
+        text_file = TextFile(file_name, remove_file_name)
+        text_content = text_file.get_text()
+        text_file.save_text_file("\n".join(text_content))
 
     def go_back(self):
         # 메인 화면으로 돌아가는 기능 구현

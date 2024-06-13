@@ -49,12 +49,12 @@ class MeasureManager:
         average_typing_speed = total_typing_speed / count
 
         return {
-            "total_matches" : total_matches,
-            "total_mismatches" : total_mismatches,
-            "average_accuracy" : average_accuracy,
-            "average_typing_speed": average_typing_speed,
-            "max_typing_speed" : self.max_typing_speed,
-            "running_time" : self.end_time - self.start_time
+            "total_matches": total_matches,
+            "total_mismatches": total_mismatches,
+            "average_accuracy": average_accuracy,
+            "average_typing_speed": round(average_typing_speed),
+            "max_typing_speed": round(self.max_typing_speed),
+            "running_time": round(self.end_time - self.start_time)
         }
 
     def calculate(self, original, comparison):

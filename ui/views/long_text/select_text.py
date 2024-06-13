@@ -1,6 +1,7 @@
 from tkinter import LabelFrame, Label, GROOVE, Frame
 from ui.global_font import GlobalFont
 from ui.widgets.tklistbox import TKListbox
+from utils.text_file import TextFile
 import customtkinter as ctk
 
 # @TODO: 파일명에 맞게 파일을 추가해 주세요.
@@ -19,9 +20,9 @@ SELECT_LIST_BOX = [
 class SelectTextWindow:
     def __init__(self, master):
         self.master = master
+        self.select_list_box = TextFile.get_text_file_list()
         self.create_window(master)
-    def append(self, data):
-        SELECT_LIST_BOX.append(data)
+
     def create_window(self, master):
         from ui.window.default_window import DefaultWindow
         custom_window = DefaultWindow(root=master, master=master, title="글 선택", window_size="720x768")
@@ -32,7 +33,7 @@ class SelectTextWindow:
                                        font=font, labelanchor="n")
         select_text_frame.pack(padx=70, pady=10, fill="both", expand=True)
 
-        custom_listbox = TKListbox(select_text_frame, SELECT_LIST_BOX, on_item_selected=self.on_item_selected)
+        custom_listbox = TKListbox(select_text_frame, self.select_list_box, on_item_selected=self.on_item_selected)
         custom_listbox.create_listbox()
 
         label_frame = Frame(frame, relief=GROOVE, bd=2, bg="#AAAAAA")
@@ -54,7 +55,7 @@ class SelectTextWindow:
 
         from ui.views.long_text.long_text import LongTextWindow
 
-        LongTextWindow(new_root, file_name=item['file_name'], label=item['label'], base_path=['file_path'])
+        LongTextWindow(new_root, file_name=item['file_name'], label=item['label'])
         new_root.mainloop()
 
 

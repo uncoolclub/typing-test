@@ -3,47 +3,40 @@ import os
 from datetime import datetime
 
 
-def set_file_path(nickname): # default 파일 경로
+def set_file_path(nickname):  # default 파일 경로
     return f"../User/personal/{nickname}.json"
 
-def create_file(nickname): # 파일 생성
+
+def create_file(nickname):  # 파일 생성
     file_path = set_file_path(nickname)
-    if not os.path.exists(file_path): # 경로에 있는지 없는지 체크
+    if not os.path.exists(file_path):  # 경로에 있는지 없는지 체크
         with open(file_path, 'w', encoding="UTF-8") as file:
             json.dump({}, file, indent=4)
 
-def read_json(nickname): # 파일 읽어오기
+
+def read_json(nickname):  # 파일 읽어오기
     file_path = set_file_path(nickname)
     with open(file_path, 'r', encoding="UTF-8") as file:
         return json.load(file)
 
-def save_json(nickname, text_name, result): # 파일에 값 저장
-    now = datetime.now() # 현재 시간
+
+def save_json(nickname, text_name, result):  # 파일에 값 저장
+    now = datetime.now()  # 현재 시간
     file_path = set_file_path(nickname)
     data = read_json(nickname)
-    check_flag = True # 이미 저장된 글 데이터가 있는지 확인할 flag
-
+    check_flag = True  # 이미 저장된 글 데이터가 있는지 확인할 flag
+    print(result)
     result = {
-        "총 글자 수:": f"{result['total_matches'] + result['total_mismatches']} 개",
-        "정확한 글자 수:": f"{result['total_matches']} 개",
-        "연습 시간:": f"{result['running_time']} 초",
-        # "연습 시간:": f"{minutes:02}:{seconds:02} 초",  # MM:SS 형태로 표시
-        "최고 속도:": f"{result['max_typing_speed']} 타",
-        "정확도:": f"{result['average_accuracy']} %",
-        "평균 타수:": f"{result['average_typing_speed']} 타"
+        "쓰인글수": result['total_matches'] + result['total_mismatches'],
+        "맞은글수": result['total_matches'],
+        "연습시간": result['running_time'],
+        "최고타수": result['max_typing_speed'],
+        "정확도": result['average_accuracy'],
+        "평균타수": result['average_typing_speed'],
+        "날짜": now.strftime("%Y-%m-%d %H:%M:%S")
     }
-    # result = {
-    #     '쓰인글수': info.num_chars,
-    #     '맞은글수': info.correct_characters,
-    #     '연습시간': info.elapsed_time,
-    #     '정확도': info.overall_accuracy,
-    #     '최고타수': info.max_cpm,
-    #     '평균타수': info.max_cpm,
-    #     '날짜': now.strftime("%Y-%m-%d %H:%M:%S")
-    # }
-
     for item in list(map(str, data.keys())):
-        if item == text_name: # 이미 저장된 글 데이터가 있다면 덧붙이기
+        if item == text_name:  # 이미 저장된 글 데이터가 있다면 덧붙이기
             data[item].append(result)
             check_flag = False
             break

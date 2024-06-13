@@ -1,11 +1,12 @@
 import os
 
+DEFAULT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../resource/text'))
 
 class TextFile:
     def __init__(self, file_name, base_path=None):
         if base_path is None:
             # 현재 파일의 부모 디렉토리로부터 기본 경로 설정
-            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../resource/text'))
+            base_path = DEFAULT_PATH
         self.file_path = ""
         self.file_name = file_name
         self.read_text(file_name, base_path)
@@ -24,3 +25,16 @@ class TextFile:
 
     def get_text(self):
         return self.text_list
+
+    def save_text_file(self, content):
+        with open(DEFAULT_PATH+"/"+self.file_name+".txt", 'w', encoding='utf-8') as destination_file:
+            destination_file.write(content)
+
+    @staticmethod
+    def get_text_file_list():
+        txt_files = []
+        for filename in os.listdir(DEFAULT_PATH):
+            if filename.endswith('.txt'):
+                file_base_name, file_extension = os.path.splitext(filename)
+                txt_files.append({"label": file_base_name, "file_name": filename})
+        return txt_files
