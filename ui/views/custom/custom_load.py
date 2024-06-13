@@ -1,9 +1,10 @@
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk, filedialog
+
 from utils.center_window import center_window
 from utils.text_file import TextFile
 
-CUSTOM_LIST_BOX = list()
 
 class FileLoadWindow:
     def __init__(self, master):
@@ -16,14 +17,10 @@ class FileLoadWindow:
         # 윈도우 위치를 화면 중앙으로 설정
         center_window(self.master)
 
-        self.data = {}
         self.canvas_frame = None
         self.create_dialog()
 
     def create_dialog(self):
-        self.list_combobox = None
-        self.measure_combobox = None
-
         # 파일 다이얼로그 버튼과 긴글 연습 라벨 프레임 생성
         self.dialog_frame = ttk.Frame(self.master)
         self.dialog_frame.pack(pady=10)
@@ -52,7 +49,6 @@ class FileLoadWindow:
         if file_path:
             file_name = file_path.split("/")[-1]  # 파일 경로에서 파일 이름 추출
             print(f"Selected file: {file_name} \n path : {file_path}")  # 선택된 파일명 출력
-            CUSTOM_LIST_BOX.append({"label": file_name, "file_name": file_name, "file_path": file_path})
             self.save_custom_file(file_path, file_name)
 
     def save_custom_file(self, file_path, file_name):
@@ -63,11 +59,7 @@ class FileLoadWindow:
         text_file.save_text_file("\n".join(text_content))
 
     def go_back(self):
-        # 메인 화면으로 돌아가는 기능 구현
-        # 이 부분에 메인 화면을 호출하거나 메인 화면으로 돌아가는 로직을 추가하세요
-        print("돌아가기 버튼 클릭")
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = FileLoadWindow(master=root)
-    root.mainloop()
+        self.master.destroy()
+        new_window = ctk.CTk()
+        from ui.views.main.main import Main
+        Main(new_window)
