@@ -17,6 +17,8 @@ class FileLoadWindow:
         # 윈도우 위치를 화면 중앙으로 설정
         center_window(self.master)
 
+        self.custom_list_box = list()
+
         self.canvas_frame = None
         self.create_dialog()
 
@@ -49,7 +51,9 @@ class FileLoadWindow:
         if file_path:
             file_name = file_path.split("/")[-1]  # 파일 경로에서 파일 이름 추출
             print(f"Selected file: {file_name} \n path : {file_path}")  # 선택된 파일명 출력
+            self.custom_list_box.append({"label": file_name, "file_name": file_name, "file_path": file_path})
             self.save_custom_file(file_path, file_name)
+            self.update_file_listbox()
 
     def save_custom_file(self, file_path, file_name):
         path_arr = file_path.split("/")
@@ -57,6 +61,11 @@ class FileLoadWindow:
         text_file = TextFile(file_name, remove_file_name)
         text_content = text_file.get_text()
         text_file.save_text_file("\n".join(text_content))
+
+    def update_file_listbox(self):
+        self.file_listbox.delete(0, tk.END)  # 기존 목록 삭제
+        for file_info in self.custom_list_box:
+            self.file_listbox.insert(tk.END, file_info["label"])
 
     def go_back(self):
         self.master.destroy()

@@ -6,12 +6,12 @@ from PIL import Image, ImageTk
 
 from config import IMG_LOCATION
 from ui.widgets.tkinputframe import TKInputFrame
-# from utils.text_file import TextFile
 from utils.proverb import Proverb
 from ui.global_font import GlobalFont
 from ui.widgets.tkprogressbar import TKProgressbar
 from logic.measure.measure_manager import MeasureManager
 from ui.widgets.tklabel import TKLabel
+from utils.center_window import center_window
 
 
 class ShortTextWindow:
@@ -21,6 +21,9 @@ class ShortTextWindow:
         self.master.title("짧은글 연습")
         self.master.geometry("1024x768")
         self.master.configure(bg="#AAAAAA")
+
+        # 윈도우 위치를 화면 중앙으로 설정
+        center_window(self.master)
 
         # 측정 관리자와 텍스트 파일 로드
         self.measure_manager = MeasureManager()
@@ -37,22 +40,12 @@ class ShortTextWindow:
         self.max_length = 0
 
     def create_window(self):
-        # 메인 프레임 설정
-        frame = Frame(self.master, relief=RAISED, bd=2, bg="#AAAAAA")
-        frame.pack(side="top", fill="both", padx=30, pady=20)
-
-        # 타이틀 아이콘 로드 및 표시
-        icon_path = os.path.join(IMG_LOCATION, 'ic_keyboard.png')
-        icon_image = Image.open(icon_path)
-        icon_image = icon_image.resize((20, 20), Image.Resampling.LANCZOS)
-        icon_photo = ImageTk.PhotoImage(icon_image)
-
-        title_label = TKLabel(master=frame, text="짧은글 연습").create_label(
-            height=30, fg_color="#000088", anchor="w", text_color="white", image=icon_photo, compound="left", padx=10)
-        title_label.pack(side="top", fill='x', padx=10, pady=10)
+        from ui.window.default_window import DefaultWindow
+        custom_window = DefaultWindow(root=self.master, master=self.master, title="짧은글 연습", window_size="1024x900")
+        self.frame = custom_window.get_frame()
 
         # 짧은 텍스트 표시 프레임
-        short_text_frame = Frame(frame, relief=SUNKEN, bd=2, bg="#AAAAAA")
+        short_text_frame = Frame(self.frame, relief=SUNKEN, bd=2, bg="#AAAAAA")
         short_text_frame.pack(side="top", fill="both", padx=10)
         self.short_text_label = TKLabel(master=short_text_frame,
                                         text=self.texts[self.current_sentence_index]).create_label(height=60,
@@ -61,7 +54,7 @@ class ShortTextWindow:
 
         # 진행 상황 프레임 설정
         global_font = GlobalFont.get_global_font()
-        progress_frame = LabelFrame(frame, text="  빠르기·정확도  ", relief=SUNKEN, bd=2, bg="#AAAAAA",
+        progress_frame = LabelFrame(self.frame, text="  빠르기·정확도  ", relief=SUNKEN, bd=2, bg="#AAAAAA",
                                     fg="black", font=global_font, background="#AAAAAA", labelanchor="n")
         progress_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
@@ -85,7 +78,7 @@ class ShortTextWindow:
         self.accuracy_label_frame.pack(padx=20, pady=10, fill="x")
 
         # 결과 프레임 설정
-        result_frame = LabelFrame(frame, text="  결과  ", relief=SUNKEN, bd=2, bg="#AAAAAA", fg="black",
+        result_frame = LabelFrame(self.frame, text="  결과  ", relief=SUNKEN, bd=2, bg="#AAAAAA", fg="black",
                                   font=global_font, background="#AAAAAA", labelanchor="n")
         result_frame.pack(side="right", fill="both", padx=10, pady=10)
 

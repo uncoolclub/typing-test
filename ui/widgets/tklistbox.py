@@ -1,6 +1,7 @@
 from tkinter import Frame, Listbox, SINGLE, END, SUNKEN
 
 from ui.global_font import GlobalFont
+import unicodedata
 
 
 class TKListbox:
@@ -27,7 +28,7 @@ class TKListbox:
 
         for item in self.items:
             # 각 항목을 가운데 정렬
-            listbox.insert(END, f"{item['label']:^20}")
+            listbox.insert(END, f"{unicodedata.normalize('NFC', item['label']):^20}")
 
         listbox.bind("<Double-1>", self.on_double_click)
         self.listbox = listbox

@@ -1,3 +1,4 @@
+import unicodedata
 from ui.views.results.results import ResultsWindow
 from utils.text_file import TextFile
 import customtkinter as ctk
@@ -26,7 +27,7 @@ class LongTextWindow:
 
     def create_window(self):
         # 기본 창 설정
-        title = f"긴글 연습 - 『{self.label}』"
+        title = f"긴글 연습 - 『{unicodedata.normalize('NFC',self.label)}』"
         custom_window = DefaultWindow(root=self.master, master=self.master, title=title, window_size="1024x900")
         self.frame = custom_window.get_frame()
         self.font = GlobalFont.get_global_font(font_size=18, use_type="ctk")  # 전역 폰트 설정

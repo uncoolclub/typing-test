@@ -4,6 +4,7 @@ from ui.global_font import GlobalFont
 from ui.views.main.main import Main
 from ui.widgets.tklabel import TKLabel
 from utils.user import User
+from utils.center_window import center_window
 
 
 class NicknameInputDialog:
@@ -19,6 +20,9 @@ class NicknameInputDialog:
         self.window.title("닉네임 입력")
         self.window.geometry("720x280")
         self.window.configure(bg="#AAAAAA")
+
+        # 윈도우 위치를 화면 중앙으로 설정
+        center_window(self.window)
 
         frame = Frame(self.window, relief=RAISED, bd=2, bg="#AAAAAA")
         frame.pack(fill="both", padx=30, pady=20)
